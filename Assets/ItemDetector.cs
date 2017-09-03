@@ -38,7 +38,7 @@ public class ItemDetector : MonoBehaviour {
 				item.transform.SetParent (null);
 				item.GetComponent<CircleCollider2D> ().enabled = true;
 			}
-			colliderHit.GetComponent<wizardScript> ().hasItem = false;
+			colliderHit.GetComponent<Itemgrabber> ().hasItem = false;
 		}
 	}
 }
