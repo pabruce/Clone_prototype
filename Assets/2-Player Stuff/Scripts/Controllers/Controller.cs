@@ -99,6 +99,14 @@ public class Controller : MonoBehaviour
 			this.lateUpdate = lateUpdate;
 		}
 
+		public BehaviorState(string name, UpdateBehavior update)
+		{
+			this.name = name; 
+			this.update = update; 
+			this.fixedUpdate = null; 
+			this.lateUpdate = null; 
+		}
+
 		public override bool Equals (object obj)
 		{
 			return ((BehaviorState)obj).name == name;
