@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class DynamicCamera : MonoBehaviour 
 {
-	public float orthographicSize =5;
+	public float orthographicSize =120;
 	public Transform player1, player2;
-	public float minSizeY = 5f;
-
+	public float minSizeY = 15f;
+	public Vector2 minimumBoundary;
+	public Vector2 maximumBoundary;
 
 	void SetCameraPos() 
 	{
@@ -29,7 +30,7 @@ public class DynamicCamera : MonoBehaviour
 
 		//multiplying by 0.5, because the ortographicSize is actually half the height
 		float width = Mathf.Abs(player1.position.x - player2.position.x) * 0.5f;
-		float height = Mathf.Abs(player1.position.y - player2.position.y) * 0.5f;
+		float height = Mathf.Abs(player1.position.y - player2.position.y) *0.5f;
 
 		//computing the size
 		float camSizeX = Mathf.Max(width, minSizeX);
@@ -42,5 +43,4 @@ public class DynamicCamera : MonoBehaviour
 		SetCameraPos();
 		SetCameraSize();
 	}
-
 }
