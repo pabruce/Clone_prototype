@@ -34,9 +34,9 @@ public class DynamicCamera : MonoBehaviour
 
 		//computing the size
 		float camSizeX = Mathf.Max(width, minSizeX);
-		//camera.orthographicSize = Mathf.Max(height,
-		//	camSizeX * Screen.height / Screen.width, minSizeY);
+		Camera.main.orthographicSize = Mathf.Max(height, camSizeX * Screen.height / Screen.width, minSizeY);
 	}
+		
 
 	void Update() 
 	{
