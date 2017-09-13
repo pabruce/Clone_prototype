@@ -27,6 +27,9 @@ public class Player : Controller
 	[SerializeField]
 	private Stat movespeed = new Stat(0, 0);
 
+	[SerializeField]
+	private Camera subjectCamera;
+
 	/* Instance Methods */
 	public override void Awake ()
 	{
@@ -48,6 +51,13 @@ public class Player : Controller
 		//invoke abilities
 		//if (Input.GetKey (use_ability)) //TODO swap for proper bindings later
 			//useAbility (0, Vector2.zero);
+
+		if (Input.GetKeyDown (use_ability) && subjectCamera != null)
+		{
+			int mask = subjectCamera.cullingMask;
+			int maskMod = (mask & 1 << 10) != 0 ? ~(1 << 10) : 1 << 10;
+			subjectCamera.cullingMask = subjectCamera.cullingMask & maskMod;
+		}
 	}
 
 	private void fixedUpdatePrime()
