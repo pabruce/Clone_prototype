@@ -19,6 +19,9 @@ public class Player : Controller
 	[SerializeField]
 	private string abilityName;
 
+	//SARAHS TEMP FREEZING MOVEMENT VARIABLE
+	public bool canMove = true;
+
 	// A list of the states
 	private BehaviorState[] states;
 
@@ -68,12 +71,20 @@ public class Player : Controller
 			movementVector += Vector2.down;
 		if (right)
 			movementVector += Vector2.right;
-
+		
+		//SARAHS FREEZING SCRIPT FOR GRAPPLE HOOK TEST
+		if(!canMove)
+		{
+			physbody.velocity = Vector2.zero;
+			return;
+		}
+		//END SARAHS TEST
 		physbody.AddForce (movementVector * movespeed.value);
 
 		if (movementVector != Vector2.zero)
 			direction = movementVector;
 		facePoint (direction + (Vector2)transform.position);
+
 	}
 
 	private void lateUpdatePrime()
