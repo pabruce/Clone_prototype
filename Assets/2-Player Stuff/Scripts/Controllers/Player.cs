@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player : Controller
 {
@@ -55,8 +56,10 @@ public class Player : Controller
 		if (Input.GetKeyDown (use_ability) && subjectCamera != null)
 		{
 			int mask = subjectCamera.cullingMask;
-			int maskMod = (mask & 1 << 10) != 0 ? ~(1 << 10) : 1 << 10;
-			subjectCamera.cullingMask = subjectCamera.cullingMask & maskMod;
+			if ((mask & 1 << 10) != 0)
+				subjectCamera.cullingMask = mask & ~(1 << 10);
+			else
+				subjectCamera.cullingMask = mask | 1 << 10;
 		}
 	}
 
