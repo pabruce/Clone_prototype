@@ -30,6 +30,9 @@ public class Player : Controller
 
 	[SerializeField]
 	private Camera subjectCamera;
+	private float lenseResetTimer;
+	private float lenseResetTimerMax = 5f;
+	private bool lenseActive = false;
 
 	/* Instance Methods */
 	public override void Awake ()
@@ -53,14 +56,27 @@ public class Player : Controller
 		//if (Input.GetKey (use_ability)) //TODO swap for proper bindings later
 			//useAbility (0, Vector2.zero);
 
-		if (Input.GetKeyDown (use_ability) && subjectCamera != null)
+		lenseResetTimer -= Time.deltaTime;
+		if (lenseResetTimer <= 0f && lenseActive)
 		{
-			int mask = subjectCamera.cullingMask;
-			if ((mask & 1 << 10) != 0)
-				subjectCamera.cullingMask = mask & ~(1 << 10);
-			else
-				subjectCamera.cullingMask = mask | 1 << 10;
+			toggleLenseView ();
+			lenseActive = false;
 		}
+		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive)
+		{
+			toggleLenseView ();
+			lenseResetTimer = lenseResetTimerMax;
+			lenseActive = true;
+		}
+	}
+
+	private void toggleLenseView()
+	{
+		int mask = subjectCamera.cullingMask;
+		if ((mask & 1 << 10) != 0)
+			subjectCamera.cullingMask = mask & ~(1 << 10);
+		else
+			subjectCamera.cullingMask = mask | 1 << 10;
 	}
 
 	private void fixedUpdatePrime()
