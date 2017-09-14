@@ -10,7 +10,7 @@ public class Assembler : MonoBehaviour
     public ButtonScript linkedButton;
     public ItemDetector itemDetector;
     public ItemDetector itemDetector2;
-    public FlashTrigger flashTrigger;
+
 
     public GameObject player;
     public Transform key;
@@ -53,14 +53,6 @@ void Start()
             {
                 isOpen = true;
                 Instantiate(key, new Vector2(-5,-4), Quaternion.identity);
-            }
-        }
-        else if (flashTrigger != null)
-        {
-            if (!isOpen && flashTrigger.isTriggered)
-            {
-                isOpen = true;
-                
             }
         }
         else

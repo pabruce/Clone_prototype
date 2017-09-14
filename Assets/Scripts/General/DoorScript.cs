@@ -9,7 +9,6 @@ public class DoorScript : MonoBehaviour
 
 	public ButtonScript linkedButton;
 	public ItemDetector itemDetector;
-	public FlashTrigger flashTrigger;
 
 	public float timeDelay; //if 0, stays open
 	private float timer = 0;
@@ -72,14 +71,6 @@ public class DoorScript : MonoBehaviour
 		{
 			//check detector
 			if (!isOpen && itemDetector.isActive) 
-			{
-				isOpen = true;
-				timer = timeDelay;
-			}
-		}
-		else if(flashTrigger != null)
-		{
-			if(!isOpen && flashTrigger.isTriggered)
 			{
 				isOpen = true;
 				timer = timeDelay;
