@@ -34,9 +34,12 @@ public class Player : Controller
 	private float lenseResetTimerMax = 5f;
 	private bool lenseActive = false;
 
+	public bool canMove = true;
+
 	/* Instance Methods */
 	public override void Awake ()
 	{
+		canMove = true;
 		base.Awake ();
 		setState (new BehaviorState("prime", this.updatePrime, this.fixedUpdatePrime, this.lateUpdatePrime));
 
@@ -97,6 +100,12 @@ public class Player : Controller
 			movementVector += Vector2.down;
 		if (right)
 			movementVector += Vector2.right;
+
+		if(!canMove)
+		{
+			physbody.velocity = Vector2.zero;
+			return;
+		}
 
 		physbody.AddForce (movementVector * movespeed.value);
 
