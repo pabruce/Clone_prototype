@@ -49,6 +49,8 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
+		if(subjectCamera != null)
+			toggleLenseView ();
 		//if(abilityName != "")
 			//self.addAbility (Ability.get(abilityName));
 	}
@@ -65,7 +67,7 @@ public class Player : Controller
 			toggleLenseView ();
 			lenseActive = false;
 		}
-		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive)
+		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive && false)
 		{
 			toggleLenseView ();
 			lenseResetTimer = lenseResetTimerMax;
