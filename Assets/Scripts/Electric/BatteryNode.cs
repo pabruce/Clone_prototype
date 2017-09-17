@@ -9,7 +9,8 @@ public class BatteryNode : MonoBehaviour
 
 	public bool activated; 
 
-	public GameObject[] toggleTargets; 
+	//public GameObject[] toggleTargets; 
+	public Interactable[] toggleTargets; 
 
 
 	public float useTimerLength;
@@ -95,6 +96,7 @@ public class BatteryNode : MonoBehaviour
 
 	void ToggleTargets()
 	{
+		/*
 		foreach (GameObject g in toggleTargets)
 		{
 			if (!g.GetComponent<Magnet>().Equals(null))
@@ -105,6 +107,12 @@ public class BatteryNode : MonoBehaviour
 			{
 				g.SetActive(!g.activeSelf);
 			}
+		}
+		*/ 
+
+		foreach (Interactable i in toggleTargets)
+		{
+			i.OnInteract(); 
 		}
 	}
 
