@@ -5,6 +5,8 @@ using System;
 
 public class Player : Controller
 {
+	public bool MechActive = false;
+
 	/* Instance Vars */
 
 	[SerializeField]
@@ -26,7 +28,7 @@ public class Player : Controller
 	private Vector2 direction;
 
 	[SerializeField]
-	private Stat movespeed = new Stat(0, 0);
+	public Stat movespeed = new Stat(0, 0);
 
 	[SerializeField]
 	private Camera subjectCamera;
@@ -71,6 +73,7 @@ public class Player : Controller
 			lenseResetTimer = lenseResetTimerMax;
 			lenseActive = true;
 		}
+			
 	}
 
 	private void toggleLenseView()
@@ -112,6 +115,7 @@ public class Player : Controller
 		if (movementVector != Vector2.zero)
 			direction = movementVector;
 		facePoint (direction + (Vector2)transform.position);
+
 	}
 
 	private void lateUpdatePrime()
