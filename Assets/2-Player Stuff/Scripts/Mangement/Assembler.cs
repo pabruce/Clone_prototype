@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Assembler : MonoBehaviour
 {
+<<<<<<< HEAD
     public bool isOpen = false;
     public bool lockedToPlayer;
 
@@ -82,4 +83,7 @@ void Start()
         isOpen = true;
       
     }
+=======
+	
+>>>>>>> 9c4dcb8f65eda8caa699767cdc2e4c539a146110
 }
