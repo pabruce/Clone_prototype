@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Itemgrabber : MonoBehaviour {
+public class Itemgrabber : MonoBehaviour 
+{
 
 	public bool hasItem = false;
 	public float itemReach = 1.5f;
 	public LayerMask itemLayer;
 	public KeyCode grabButton;
 	public GameObject itemSlot;
+
+
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +25,9 @@ public class Itemgrabber : MonoBehaviour {
 
 	void ItemGrabber()
 	{
+		GameObject character = GameObject.FindGameObjectWithTag ("Player");
+		Player playerScript = character.GetComponent<Player> ();
+
 		if(Input.GetKeyDown(grabButton))
 		{
 			Collider2D item = Physics2D.OverlapCircle (transform.position, itemReach, itemLayer);
@@ -29,6 +35,7 @@ public class Itemgrabber : MonoBehaviour {
 			{
 				item.gameObject.transform.SetParent (itemSlot.transform);
 				hasItem = true;
+				playerScript.MechActive = true;
 				item.gameObject.transform.localPosition = Vector3.zero;
 				item.gameObject.GetComponent<CircleCollider2D> ().enabled = false;
 			}
@@ -36,11 +43,11 @@ public class Itemgrabber : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Space) && hasItem)
 		{
 			hasItem = false;
+			playerScript.MechActive = false;
 			Transform item = itemSlot.transform.GetChild (0);
 			item.GetComponent<CircleCollider2D> ().enabled = true;
 			item.SetParent (null);
 			item.GetComponent<Rigidbody2D> ().velocity = transform.forward * 10;
 		}
 	}
-
 }
