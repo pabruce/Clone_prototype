@@ -9,7 +9,6 @@ public class Assembler : MonoBehaviour
 
     public ButtonScript linkedButton;
     public ItemDetector itemDetector;
-    public ItemDetector itemDetector2;
 
 
     public GameObject player;
@@ -49,7 +48,7 @@ void Start()
         else if (itemDetector != null)
         {
             //check detector
-            if (!isOpen && itemDetector.isActive && itemDetector2.isActive)
+            if (!isOpen && itemDetector.isActive)
             {
                 isOpen = true;
                 Instantiate(key, new Vector2(-5,-4), Quaternion.identity);
