@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class SimpleSwitch : MonoBehaviour 
 {
-	public bool activated; 
-	public Interactable[] toggleTargets;
+	[HideInInspector] public bool activated;
+
+	[Header("Toggle via Inspector")]
+	public bool clickToToggle; 
 
 	// Use this for initialization
 	void Start () 
@@ -17,12 +19,17 @@ public class SimpleSwitch : MonoBehaviour
 	void Update () 
 	{
 		UpdateSwitchDisplay(); 
+
+		if (clickToToggle)
+		{
+			clickToToggle = false; 
+			ToggleSwitch(); 
+		}
 	}
 
 	public void ToggleSwitch()
 	{
 		activated = !activated;
-		//ToggleTargets(); 
 		SwitchInteract(); 
 	}
 
@@ -35,14 +42,6 @@ public class SimpleSwitch : MonoBehaviour
 		else
 		{
 			transform.localScale = new Vector3 (-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z); 
-		}
-	}
-
-	void ToggleTargets()
-	{
-		foreach (Interactable i in toggleTargets)
-		{
-			i.OnInteract(); 
 		}
 	}
 
