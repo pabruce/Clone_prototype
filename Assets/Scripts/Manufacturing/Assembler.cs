@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class Assembler : MonoBehaviour
 {
-    public bool isOpen = false;
-    public bool lockedToPlayer;
+    public bool isGenerating = false;
 
-    public ButtonScript linkedButton;
     public ItemDetector itemDetector;
 
 
@@ -28,49 +26,32 @@ void Start()
     // Update is called once per frame
     void Update()
     {
-        DoorControl();
+        AssemblerControl();
 
     }
 
-    void DoorControl()
+    void AssemblerControl()
     {
-        //countdown timer
-        if (linkedButton != null)
-        {
-            //check button
-            if (!isOpen && linkedButton.isTriggered)
-            {
-                isOpen = true;
-              
-            }
-
-        }
-        else if (itemDetector != null)
+        if (itemDetector != null)
         {
             //check detector
-            if (!isOpen && itemDetector.isActive)
+			if (!isGenerating && itemDetector.isActive)
             {
-                isOpen = true;
+				isGenerating = true;
                 Instantiate(key, new Vector2(-5,-4), Quaternion.identity);
             }
         }
         else
         {
-            if (Vector3.Distance(player.transform.position, transform.position) <= 0.75f && Input.GetKeyDown(KeyCode.E) && !isOpen && !lockedToPlayer)
+			if (Vector3.Distance(player.transform.position, transform.position) <= 0.75f && Input.GetKeyDown(KeyCode.E) && !isGenerating)
             {
-                isOpen = true;
+				isGenerating = true;
             }
         }
     }
-    public void Open()
+    public void ActivateAssembler()
     {
-        isOpen = true;
+		isGenerating = true;
        
-    }
-
-    public void Open(float time)
-    {
-        isOpen = true;
-      
     }
 }
