@@ -9,7 +9,7 @@ public class BatteryNode : MonoBehaviour
 	[Tooltip("The color of the BatteryNode sprite when off")]
 	public Color offColor; 
 
-	public bool activated; 
+	[HideInInspector] public bool activated; 
 
 	[Tooltip("The length of time, in seconds, it takes to transfer energy to/from the battery node")]
 	public float useTimerLength;
@@ -18,6 +18,9 @@ public class BatteryNode : MonoBehaviour
 	SpriteRenderer rend; 
 
 	GameObject progressBar; 
+
+	[Header("Toggle via Inspector")]
+	public bool clickToToggle; 
 
 	void Awake ()
 	{
@@ -48,6 +51,12 @@ public class BatteryNode : MonoBehaviour
 			justToggled = false; 
 		}
 		*/
+
+		if (clickToToggle)
+		{
+			clickToToggle = false; 
+			SetActivated(!activated); 
+		}
 
 		SetColor(); 
 	}
