@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class Player : Controller
 {
@@ -30,11 +31,18 @@ public class Player : Controller
 	[SerializeField]
 	public Stat movespeed = new Stat(0, 0);
 
+	//for lense mechanic stuff
 	[SerializeField]
 	private Camera subjectCamera;
 	private float lenseResetTimer;
+	[SerializeField]
 	private float lenseResetTimerMax = 5f;
 	private bool lenseActive = false;
+	private float lenseCooldown;
+	[SerializeField]
+	private float lenseCooldownMax = 3f;
+	[SerializeField]
+	private Image lenseStatusInd;
 
 	public bool canMove = true;
 
@@ -51,31 +59,38 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
-		if(subjectCamera != null)
-			toggleLenseView ();
-		//if(abilityName != "")
-			//self.addAbility (Ability.get(abilityName));
+		
 	}
 
 	private void updatePrime()
 	{
-		//invoke abilities
-		//if (Input.GetKey (use_ability)) //TODO swap for proper bindings later
-			//useAbility (0, Vector2.zero);
+		if (subjectCamera == null)
+			return;
 
+		lenseCooldown -= Time.deltaTime;
 		lenseResetTimer -= Time.deltaTime;
 		if (lenseResetTimer <= 0f && lenseActive)
 		{
 			toggleLenseView ();
 			lenseActive = false;
+			lenseStatusInd.color = Color.red;
+			lenseCooldown = lenseCooldownMax;
 		}
-		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive && false)
+		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive && lenseCooldown <= 0f)
 		{
 			toggleLenseView ();
 			lenseResetTimer = lenseResetTimerMax;
 			lenseActive = true;
+			lenseStatusInd.color = Color.green;
 		}
-			
+
+		if (lenseActive)
+			lenseStatusInd.fillAmount = lenseResetTimer / lenseResetTimerMax;
+		else
+		{
+			float perc = lenseCooldown / lenseCooldownMax;
+			lenseStatusInd.fillAmount = perc > 0f ? perc : 0f;
+		}
 	}
 
 	private void toggleLenseView()
