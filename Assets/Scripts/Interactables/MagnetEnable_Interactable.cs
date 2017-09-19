@@ -2,15 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Magnet))]
 public class MagnetEnable_Interactable : Interactable 
 {
-	Magnet magnet; 
-
-	void Start()
-	{
-		magnet = GetComponent<Magnet>(); 
-	}
+	[Tooltip("Drag in the GameObject that will be affected")]
+	public Magnet magnet; 
 
 	public override void OnInteract()
 	{

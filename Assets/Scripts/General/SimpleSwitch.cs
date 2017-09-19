@@ -5,7 +5,7 @@ using UnityEngine;
 public class SimpleSwitch : MonoBehaviour 
 {
 	public bool activated; 
-	public Interactable[] toggleTargets; 
+	public Interactable[] toggleTargets;
 
 	// Use this for initialization
 	void Start () 
@@ -22,7 +22,8 @@ public class SimpleSwitch : MonoBehaviour
 	public void ToggleSwitch()
 	{
 		activated = !activated;
-		ToggleTargets(); 
+		//ToggleTargets(); 
+		SwitchInteract(); 
 	}
 
 	void UpdateSwitchDisplay()
@@ -40,6 +41,14 @@ public class SimpleSwitch : MonoBehaviour
 	void ToggleTargets()
 	{
 		foreach (Interactable i in toggleTargets)
+		{
+			i.OnInteract(); 
+		}
+	}
+
+	void SwitchInteract()
+	{
+		foreach (Interactable i in GetComponents<Interactable>())
 		{
 			i.OnInteract(); 
 		}

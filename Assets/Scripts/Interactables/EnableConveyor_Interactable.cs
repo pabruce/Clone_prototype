@@ -2,19 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(ConveyorBelt))]
 public class EnableConveyor_Interactable : Interactable 
 {
-	ConveyorBelt belt; 
-
-	// Use this for initialization
-	void Start () 
-	{
-		belt = GetComponent<ConveyorBelt>(); 
-	}
+	[Tooltip("Drag in the GameObject that will be affected")]
+	public ConveyerController conveyorBelt; 
 	
 	public override void OnInteract()
 	{
-		belt.activated = !belt.activated; 
+		conveyorBelt.isOn = !conveyorBelt.isOn;  
 	}
 }

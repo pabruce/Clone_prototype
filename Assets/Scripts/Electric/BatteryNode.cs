@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class BatteryNode : MonoBehaviour 
 {
+	[Tooltip("The color of the BatteryNode sprite when on")]
 	public Color onColor; 
+	[Tooltip("The color of the BatteryNode sprite when off")]
 	public Color offColor; 
 
 	public bool activated; 
 
-	//public GameObject[] toggleTargets; 
-	public Interactable[] toggleTargets; 
-
-
+	[Tooltip("The length of time, in seconds, it takes to transfer energy to/from the battery node")]
 	public float useTimerLength;
 	private float useTimer; 
 
@@ -91,26 +90,12 @@ public class BatteryNode : MonoBehaviour
 	{
 		activated = _activated; 
 		useTimer = useTimerLength; 
-		ToggleTargets(); 
+		SwitchInteract(); 
 	}
 
-	void ToggleTargets()
+	void SwitchInteract()
 	{
-		/*
-		foreach (GameObject g in toggleTargets)
-		{
-			if (!g.GetComponent<Magnet>().Equals(null))
-			{
-				g.GetComponent<Magnet>().Toggle(); 
-			}
-			else
-			{
-				g.SetActive(!g.activeSelf);
-			}
-		}
-		*/ 
-
-		foreach (Interactable i in toggleTargets)
+		foreach (Interactable i in GetComponents<Interactable>())
 		{
 			i.OnInteract(); 
 		}
@@ -127,4 +112,6 @@ public class BatteryNode : MonoBehaviour
 			rend.color = offColor; 
 		}
 	}
+
+
 }
