@@ -6,39 +6,40 @@ public class Assembler : MonoBehaviour
 {
     public bool isGenerating = false;
 
-    public ItemDetector itemDetector;
-
+	public ItemDetector[] itemDetector;
 
     public GameObject player;
-    public Transform key;
+    public Transform itemToCreate;
     public float distanceToPlayer;
+	public Vector2 CreatedItem;
 
     // Use this for initialization    
 void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
- 
 
         /*if (linkedButton == null && itemDetector == null && flashTrigger == null)
 			timeDelay = 0;*/
     }
 
+
     // Update is called once per frame
     void Update()
     {
-        AssemblerControl();
+		CheckDetectors ();
+		AssemblerControl ();
 
     }
 
     void AssemblerControl()
-    {
-        if (itemDetector != null)
+    {		
+		if (itemDetector != null && CheckDetectors() == true)
         {
             //check detector
-			if (!isGenerating && itemDetector.isActive)
-            {
+			if (!isGenerating)
+			{
 				isGenerating = true;
-                Instantiate(key, new Vector2(-5,-4), Quaternion.identity);
+				Instantiate(itemToCreate, CreatedItem, Quaternion.identity);
             }
         }
         else
@@ -54,4 +55,14 @@ void Start()
 		isGenerating = true;
        
     }
+
+	bool CheckDetectors()
+	{
+		for (int i = 0; i < itemDetector.Length; i++) {
+
+			if (!itemDetector [i].isActive)
+				return false;
+		}
+		return true;
+	}
 }
