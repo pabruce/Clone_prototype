@@ -35,10 +35,17 @@ public class CameraManager : MonoBehaviour
 
 	public void Update()
 	{
+		if (Input.GetKey (KeyCode.Space)) //DEBUG
+			shakeCamera (0.1f, 0.5f);
+
+		//look ahead
+		Vector3 lookAheadPos = new Vector3 (Mathf.Round(Input.GetAxis ("RightH" + playerNumber)), Mathf.Round(Input.GetAxis ("RightV" + playerNumber)), 0f) * lookAheadMagnitude;
+		cam.localPosition = Vector3.Lerp (cam.localPosition, lookAheadPos, Time.deltaTime * lookAheadMagnitude);
+
 		//shake the camera
 		if (shakeDur > 0f)
 		{
-			cam.localPosition = (Vector3)Random.insideUnitCircle * shakeIntensity;
+			cam.localPosition += (Vector3)Random.insideUnitCircle * shakeIntensity;
 
 			shakeIntensity -= shakeDecay * Time.deltaTime;
 			if (shakeIntensity <= 0f)
@@ -51,7 +58,7 @@ public class CameraManager : MonoBehaviour
 				shakeIntensity = 0f;
 				shakeDecay = 0f;
 
-				cam.localPosition = Vector2.zero;
+				//cam.localPosition = Vector2.zero;
 			}
 		}
 	}
@@ -61,9 +68,7 @@ public class CameraManager : MonoBehaviour
 		//stay locked to the target's position
 		if (isFollowingTarget && target != null)
 		{
-			Vector3 tarPos = new Vector3 (target.position.x, target.position.y, transform.position.z);
-			tarPos += new Vector3 (Mathf.Round(Input.GetAxis ("RightH" + playerNumber)), Mathf.Round(Input.GetAxis ("RightV" + playerNumber)), 0f) * lookAheadMagnitude;
-			transform.position = tarPos;
+			transform.position = new Vector3 (target.position.x, target.position.y, transform.position.z);
 		}
 	}
 
