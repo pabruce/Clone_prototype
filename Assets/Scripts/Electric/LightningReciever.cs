@@ -5,9 +5,10 @@ using UnityEngine;
 public class LightningReciever : MonoBehaviour {
 
 	public float timer = 0;
-	public bool isActive;
+	private bool isActive;
 	public float delay = 0.25f;
 	private SpriteRenderer sprite;
+	public bool activated;
 
 	// Use this for initialization
 	void Start () 
@@ -18,6 +19,16 @@ public class LightningReciever : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
+		if(isActive && !activated)
+		{
+			activated = true;
+			SwitchInteract ();
+		}
+		if(!isActive && activated)
+		{
+			activated = false;
+			SwitchInteract ();
+		}
 		if (timer > 0)
 			timer -= Time.deltaTime;
 		else
@@ -33,5 +44,13 @@ public class LightningReciever : MonoBehaviour {
 	public void Charge()
 	{
 		timer = delay;
+	}
+
+	void SwitchInteract()
+	{
+		foreach (Interactable i in GetComponents<Interactable>())
+		{
+			i.OnInteract(); 
+		}
 	}
 }
