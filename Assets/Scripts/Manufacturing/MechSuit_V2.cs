@@ -2,11 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PushHeavyBlock : MonoBehaviour 
-{
-	public bool isHeavy;
-	private GameObject character;
-	public bool isBeingMoved;
+public class MechSuit_V2 : MonoBehaviour {
+
+	public GameObject character;
+
+	// Use this for initialization
+	void Start () {
+		
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+	}
 
 	void OnTriggerEnter2D(Collider2D col)
 	{
@@ -14,13 +22,9 @@ public class PushHeavyBlock : MonoBehaviour
 			character = col.gameObject;
 		else
 			return;
-		Player playerScript = character.GetComponent<Player> ();
 		Itemgrabber grabber = character.GetComponent<Itemgrabber> ();
 
-		if (((playerScript.MechActive == true && isHeavy) || !isHeavy)) 
-		{
-			grabber.boxToGrab = this;
-		}
+		grabber.SuitToGrab = this;
 
 	}
 
@@ -30,14 +34,8 @@ public class PushHeavyBlock : MonoBehaviour
 			character = col.gameObject;
 		else
 			return;
-
-		Player playerScript = character.GetComponent<Player> ();
 		Itemgrabber grabber = character.GetComponent<Itemgrabber> ();
 
-		if (((playerScript.MechActive == true && isHeavy) || !isHeavy)) 
-		{
-			grabber.boxToGrab = null;
-		}
+		grabber.SuitToGrab = null;
 	}
 }
-		

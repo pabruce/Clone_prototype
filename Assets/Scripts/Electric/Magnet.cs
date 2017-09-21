@@ -21,7 +21,7 @@ public class Magnet : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	void FixedUpdate () 
 	{
 		List<Rigidbody2D> affected = new List<Rigidbody2D>(); 
 
@@ -58,11 +58,17 @@ public class Magnet : MonoBehaviour
 			{
 				if (push)
 				{
-					rb.AddForce(-transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier);
+					if (rb.GetComponent<LightningBolt> () != null)
+						rb.velocity = rb.GetComponent<LightningBolt> ().moveSpeed * rb.transform.up + (-transform.up * strength * rb.gameObject.GetComponent<MagneticObject> ().strengthMultiplier);
+					else
+						rb.AddForce(-transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier * 0.0001f);
 				}
 				else
 				{
-					rb.AddForce(transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier);
+					if (rb.GetComponent<LightningBolt> () != null)
+						rb.velocity = rb.GetComponent<LightningBolt> ().moveSpeed * rb.transform.up + (transform.up * strength * rb.gameObject.GetComponent<MagneticObject> ().strengthMultiplier);
+					else
+						rb.AddForce(transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier * 0.0001f);
 				}
 			}
 		}

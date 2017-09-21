@@ -7,10 +7,14 @@ public class Chameleon : MonoBehaviour {
 	public bool isHidden;
 	public bool isInHideZone;
 	public KeyCode hideButton;
+	public float rechargeRate;
+	public float useTime;
+	public float charge;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start () 
+	{
+		charge = useTime;
 	}
 
 	// Update is called once per frame
@@ -25,6 +29,26 @@ public class Chameleon : MonoBehaviour {
 			ToggleHide ();
 		}
 
+		if(isHidden)
+		{
+			charge -= Time.deltaTime;
+			if (charge <= 0)
+				ToggleHide ();
+			gameObject.GetComponent<SpriteRenderer> ().color = new Color (0.5f - charge / useTime, 0.5f + (charge / useTime * 0.112f), 0.5f - (charge / useTime * 0.3f));
+		}
+		else 
+		{
+			if (charge <= useTime)
+				charge += Time.deltaTime * rechargeRate;
+			else
+				charge = useTime;
+			if (charge >= useTime - 0.1f && charge < useTime)
+				gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
+			else
+			{
+				gameObject.GetComponent<SpriteRenderer> ().color = Color.green;
+			}
+		} 
 	}
 
 	void ToggleHide()
@@ -33,12 +57,11 @@ public class Chameleon : MonoBehaviour {
 		if(isHidden)
 		{
 			gameObject.layer = 14;
-			gameObject.GetComponent<SpriteRenderer> ().color = new Color(0, 0.6f, 0.2f);
+
 		}
 		else
 		{
 			gameObject.layer = 13;
-			gameObject.GetComponent<SpriteRenderer> ().color = Color.green;
 		}
 	}
 }
