@@ -6,7 +6,7 @@ public class ItemDetector : MonoBehaviour {
 
 	public bool isActive = false;
 	public string itemName = "key";
-	public GameObject item;
+	private GameObject item;
 	public bool destroysObject = false;
 
 	// Use this for initialization
@@ -31,6 +31,7 @@ public class ItemDetector : MonoBehaviour {
 		else if (colliderHit.CompareTag ("Player") && !isActive && colliderHit.transform.Find("ItemSlot").Find(itemName) != null)
 		{
 			isActive = true;
+
 			item = colliderHit.transform.Find("ItemSlot").Find(itemName).gameObject;
 			if (destroysObject)
 				Destroy (item);

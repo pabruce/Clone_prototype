@@ -4,73 +4,65 @@ using UnityEngine;
 
 public class Assembler : MonoBehaviour
 {
-    public bool isOpen = false;
-    public bool lockedToPlayer;
+    public bool isGenerating = false;
 
-    public ButtonScript linkedButton;
-    public ItemDetector itemDetector;
-
+	public ItemDetector[] itemDetector;
 
     public GameObject player;
-    public Transform key;
+    public Transform itemToCreate;
     public float distanceToPlayer;
+	public Vector2 CreatedItem;
 
     // Use this for initialization    
 void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
- 
 
         /*if (linkedButton == null && itemDetector == null && flashTrigger == null)
 			timeDelay = 0;*/
     }
 
+
     // Update is called once per frame
     void Update()
     {
-        DoorControl();
+		CheckDetectors ();
+		AssemblerControl ();
 
     }
 
-    void DoorControl()
-    {
-        //countdown timer
-        if (linkedButton != null)
-        {
-            //check button
-            if (!isOpen && linkedButton.isTriggered)
-            {
-                isOpen = true;
-              
-            }
-
-        }
-        else if (itemDetector != null)
+    void AssemblerControl()
+    {		
+		if (itemDetector != null && CheckDetectors() == true)
         {
             //check detector
-            if (!isOpen && itemDetector.isActive)
-            {
-                isOpen = true;
-                Instantiate(key, new Vector2(-5,-4), Quaternion.identity);
+			if (!isGenerating)
+			{
+				isGenerating = true;
+				Instantiate(itemToCreate, CreatedItem, Quaternion.identity);
             }
         }
         else
         {
-            if (Vector3.Distance(player.transform.position, transform.position) <= 0.75f && Input.GetKeyDown(KeyCode.E) && !isOpen && !lockedToPlayer)
+			if (Vector3.Distance(player.transform.position, transform.position) <= 0.75f && Input.GetKeyDown(KeyCode.E) && !isGenerating)
             {
-                isOpen = true;
+				isGenerating = true;
             }
         }
     }
-    public void Open()
+    public void ActivateAssembler()
     {
-        isOpen = true;
+		isGenerating = true;
        
     }
 
-    public void Open(float time)
-    {
-        isOpen = true;
-      
-    }
+	bool CheckDetectors()
+	{
+		for (int i = 0; i < itemDetector.Length; i++) {
+
+			if (!itemDetector [i].isActive)
+				return false;
+		}
+		return true;
+	}
 }
