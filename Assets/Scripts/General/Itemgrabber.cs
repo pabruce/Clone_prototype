@@ -29,8 +29,7 @@ public class Itemgrabber : MonoBehaviour
 
 	void ItemGrabber()
 	{
-		GameObject character = GameObject.FindGameObjectWithTag ("Player");
-		Player playerScript = character.GetComponent<Player> ();
+		Player playerScript = GetComponent<Player> ();
 
 		if(Input.GetKeyDown(grabButton))
 		{
@@ -38,6 +37,7 @@ public class Itemgrabber : MonoBehaviour
 			if(SuitToGrab != null && WornSuit == null)
 			{
 				WornSuit = SuitToGrab;
+				playerScript.movespeed.setBase (10);
 				WornSuit.transform.SetParent (transform);
 				WornSuit.transform.localPosition = Vector3.zero;
 				WornSuit.GetComponent<BoxCollider2D> ().enabled = false;
@@ -50,9 +50,9 @@ public class Itemgrabber : MonoBehaviour
 				boxToGrab.transform.SetParent (transform);
 				boxBeingMoved = boxToGrab;
 				if (!playerScript.MechActive || boxBeingMoved.isHeavy)
-					playerScript.movespeed.setBase (10);
+					playerScript.movespeed.setBase (8);
 				if (playerScript.MechActive && !boxBeingMoved.isHeavy)
-					playerScript.movespeed.setBase (12);
+					playerScript.movespeed.setBase (10);
 			}
 			else if(boxBeingMoved != null)
 			{
@@ -60,24 +60,24 @@ public class Itemgrabber : MonoBehaviour
 				boxBeingMoved.transform.SetParent (null);
 				boxBeingMoved = null;
 				if (playerScript.MechActive)
-					playerScript.movespeed.setBase(12);
-				else
 					playerScript.movespeed.setBase(17);
+				else
+					playerScript.movespeed.setBase(10);
 			}
 			else if(item != null && !hasItem && WornSuit == null)
 			{
 				item.gameObject.transform.SetParent (itemSlot.transform);
 				hasItem = true;
 				playerScript.MechActive = true;
-				playerScript.movespeed.lockTo (12);
 				item.gameObject.transform.localPosition = Vector3.zero;
 				item.gameObject.GetComponent<CircleCollider2D> ().enabled = false;
 			}
 		}
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
-			if(WornSuit != null)
+			if(WornSuit != null && boxBeingMoved == null)
 			{
+				playerScript.movespeed.setBase (17);
 				WornSuit.transform.SetParent (null);
 				gameObject.GetComponent<Player> ().MechActive = false;
 				WornSuit.GetComponent<BoxCollider2D> ().enabled = true;
