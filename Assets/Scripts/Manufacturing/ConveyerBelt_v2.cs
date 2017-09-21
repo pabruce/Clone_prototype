@@ -91,7 +91,7 @@ public class ConveyerBelt_v2 : MonoBehaviour
 			}
 			rb2d.AddForce (revDir * 100 * acceleration * controller.speedMod * Time.deltaTime);
 		}
-		print ("Moving Shit...");
+		//print ("Moving Shit...");
 	}
 
 
