@@ -61,14 +61,14 @@ public class Magnet : MonoBehaviour
 					if (rb.GetComponent<LightningBolt> () != null)
 						rb.velocity = rb.GetComponent<LightningBolt> ().moveSpeed * rb.transform.up + (-transform.up * strength * rb.gameObject.GetComponent<MagneticObject> ().strengthMultiplier);
 					else
-						rb.AddForce(-transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier * 0.0001f);
+						rb.AddForce(-transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier);
 				}
 				else
 				{
 					if (rb.GetComponent<LightningBolt> () != null)
 						rb.velocity = rb.GetComponent<LightningBolt> ().moveSpeed * rb.transform.up + (transform.up * strength * rb.gameObject.GetComponent<MagneticObject> ().strengthMultiplier);
 					else
-						rb.AddForce(transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier * 0.0001f);
+						rb.AddForce(transform.up * strength * rb.gameObject.GetComponent<MagneticObject>().strengthMultiplier);
 				}
 			}
 		}
