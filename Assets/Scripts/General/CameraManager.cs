@@ -11,15 +11,21 @@ public class CameraManager : MonoBehaviour
 	// The Transform of the GameObject to which the camera is attached
 	private Transform cam;
 
+	[SerializeField]
+	private int playerNumber = 1;
+
 	// Target stuff
 	public Transform target;
 	public bool isFollowingTarget;
-	public bool freeFollow;
 
 	// Shake stuff
 	private float shakeDur = 0f;
 	private float shakeIntensity;
 	private float shakeDecay;
+
+	// Misc
+	[SerializeField]
+	private float lookAheadMagnitude = 5f;
 
 	/* Instance Methods */
 	public void Awake()
@@ -48,20 +54,17 @@ public class CameraManager : MonoBehaviour
 				cam.localPosition = Vector2.zero;
 			}
 		}
-
-		//follow a target or transition through a path
-		if (isFollowingTarget && target != null && freeFollow)
-		{
-			Vector3 tarPos = new Vector3 (target.position.x, target.position.y, transform.position.z);
-			transform.position = Vector3.Lerp (transform.position, tarPos, Time.deltaTime);
-		}
 	}
 
 	public void LateUpdate()
 	{
 		//stay locked to the target's position
-		if (isFollowingTarget && target != null && !freeFollow)
-			transform.position = new Vector3 (target.position.x, target.position.y, transform.position.z);
+		if (isFollowingTarget && target != null)
+		{
+			Vector3 tarPos = new Vector3 (target.position.x, target.position.y, transform.position.z);
+			tarPos += new Vector3 (Mathf.Round(Input.GetAxis ("RightH" + playerNumber)), Mathf.Round(Input.GetAxis ("RightV" + playerNumber)), 0f) * lookAheadMagnitude;
+			transform.position = tarPos;
+		}
 	}
 
 	// Assigns the target and toggles target following
