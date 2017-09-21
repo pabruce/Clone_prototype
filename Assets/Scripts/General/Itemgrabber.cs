@@ -49,18 +49,27 @@ public class Itemgrabber : MonoBehaviour
 				boxToGrab.GetComponent<Rigidbody2D> ().simulated = false;
 				boxToGrab.transform.SetParent (transform);
 				boxBeingMoved = boxToGrab;
+				if (!playerScript.MechActive || boxBeingMoved.isHeavy)
+					playerScript.movespeed.setBase (10);
+				if (playerScript.MechActive && !boxBeingMoved.isHeavy)
+					playerScript.movespeed.setBase (12);
 			}
 			else if(boxBeingMoved != null)
 			{
 				boxBeingMoved.GetComponent<Rigidbody2D> ().simulated = true;
 				boxBeingMoved.transform.SetParent (null);
 				boxBeingMoved = null;
+				if (playerScript.MechActive)
+					playerScript.movespeed.setBase(12);
+				else
+					playerScript.movespeed.setBase(17);
 			}
 			else if(item != null && !hasItem && WornSuit == null)
 			{
 				item.gameObject.transform.SetParent (itemSlot.transform);
 				hasItem = true;
 				playerScript.MechActive = true;
+				playerScript.movespeed.lockTo (12);
 				item.gameObject.transform.localPosition = Vector3.zero;
 				item.gameObject.GetComponent<CircleCollider2D> ().enabled = false;
 			}
@@ -78,6 +87,7 @@ public class Itemgrabber : MonoBehaviour
 			{
 				hasItem = false;
 				playerScript.MechActive = false;
+				playerScript.movespeed.setBase (17);
 				Transform item = itemSlot.transform.GetChild (0);
 				item.GetComponent<CircleCollider2D> ().enabled = true;
 				item.SetParent (null);
