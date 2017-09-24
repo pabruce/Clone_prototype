@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerHitBubble : MonoBehaviour 
 {
-	public float timetoreAwakenGuard= 5f;
+	public float wakeUpTime= 5f;
 	public float timetoresetLevel= 10f;
 	public GameObject player;
 
@@ -28,7 +28,7 @@ public class PlayerHitBubble : MonoBehaviour
 		{
 			Debug.Log ("Player Saved");
 			player.GetComponent<Player> ().enabled = true;
-			GameObject.FindGameObjectWithTag ("Guard").GetComponent<GuardTimer> ().ActivateAfterCollide (timetoreAwakenGuard);
+			GameObject.FindGameObjectWithTag ("Guard").GetComponent<GuardTimer> ().ActivateAfterCollide (wakeUpTime);
 			Debug.Log("Stop Fail Timer");
 			GameObject.FindGameObjectWithTag ("Guard").GetComponent<GuardFailTimer> ().StopAllCoroutines();
 		}
