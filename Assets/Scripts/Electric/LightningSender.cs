@@ -6,10 +6,10 @@ public class LightningSender : MonoBehaviour
 {
 	public GameObject bullet;
 	public bool isOn;
-	public float timer;
+	private float timer;
 	public float delay;
 	private SpriteRenderer sprite;
-	public Transform spawn;
+	private Transform spawn;
 
 	// Use this for initialization
 	void Start () 
