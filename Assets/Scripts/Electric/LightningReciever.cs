@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class LightningReciever : MonoBehaviour {
 
-	public float timer = 0;
+	private float timer = 0;
 	private bool isActive;
 	public float delay = 0.25f;
 	private SpriteRenderer sprite;
+	[HideInInspector]
 	public bool activated;
 
 	// Use this for initialization

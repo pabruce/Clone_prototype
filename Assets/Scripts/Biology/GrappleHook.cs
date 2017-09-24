@@ -13,18 +13,24 @@ public class GrappleHook : MonoBehaviour {
 	public bool canPullBlocks;
 	public bool canPullPlayer;
 
+	[HideInInspector]
 	public bool isExtended;
+	[HideInInspector]
 	public bool isRetracting;
+	[HideInInspector]
 	public bool isPullingPlayer;
 
-	public LineRenderer rope;
+	private LineRenderer rope;
 	private bool hasItem;
 	private Vector3 rotationFacing;
 	private Vector3 targetLocation;
 
 	// Use this for initialization
-	void Start () {
-
+	void Start () 
+	{
+		if (player == null)
+			player = transform.GetComponentInParent<Player> ().gameObject;
+		rope = gameObject.GetComponent<LineRenderer> ();
 	}
 
 	// Update is called once per frame

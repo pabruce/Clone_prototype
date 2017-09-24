@@ -6,7 +6,10 @@ public class ConveyerBelt_v2 : MonoBehaviour
 {
 	public enum Directions {RIGHT, LEFT, DOWN, UP};
 
+	[HideInInspector]
 	public ConveyerController controller;
+
+
 	public float acceleration = 1.0f;
 	public float speedLimit = 5f;
 	public Directions positiveDirection;

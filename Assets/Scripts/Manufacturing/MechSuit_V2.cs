@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MechSuit_V2 : MonoBehaviour {
 
+	[HideInInspector]
 	public GameObject character;
 
 	// Use this for initialization
