@@ -6,6 +6,7 @@ public class PushHeavyBlock : MonoBehaviour
 {
 	public bool isHeavy;
 	private GameObject character;
+	[HideInInspector]
 	public bool isBeingMoved;
 
 	void OnTriggerEnter2D(Collider2D col)
