@@ -102,6 +102,7 @@ public class GrappleHook : MonoBehaviour {
 			{
 				player.GetComponent<Player> ().canMove = true;
 				isExtended = false;
+				player.layer = 13;
 				isPullingPlayer = false;
 				transform.SetParent (player.transform);
 				transform.localPosition = Vector3.zero;
@@ -117,6 +118,7 @@ public class GrappleHook : MonoBehaviour {
 		{
 			if(coll.collider.CompareTag("Hook") && canPullPlayer)
 			{
+				player.layer = 20;
 				isPullingPlayer = true;
 			}
 			else if(coll.collider.CompareTag("PullBlock") && canPullBlocks)

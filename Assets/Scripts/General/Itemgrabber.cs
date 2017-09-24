@@ -60,9 +60,9 @@ public class Itemgrabber : MonoBehaviour
 				boxBeingMoved.transform.SetParent (null);
 				boxBeingMoved = null;
 				if (playerScript.MechActive)
-					playerScript.movespeed.setBase(17);
-				else
 					playerScript.movespeed.setBase(10);
+				else
+					playerScript.movespeed.setBase(17);
 			}
 			else if(item != null && !hasItem && WornSuit == null)
 			{
