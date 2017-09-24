@@ -11,7 +11,10 @@ public class GuardAI : MonoBehaviour
 	public float sightRange = 3;
 	public int numberOfChecks = 12;
 
+	[HideInInspector]
 	public Vector3 target;
+
+	[HideInInspector]
 	public bool hasTarget = false;
 
 	private Transform visionCone;
