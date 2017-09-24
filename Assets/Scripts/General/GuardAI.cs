@@ -5,24 +5,31 @@ using UnityEngine;
 public class GuardAI : MonoBehaviour 
 {
 	public LayerMask visionLayers;
-	public float sightRange = 3;
 	public float moveSpeed;
+
+	public float lineOfSight = 90;
+	public float sightRange = 3;
+	public int numberOfChecks = 12;
 
 	public Vector3 target;
 	public bool hasTarget = false;
 
+	private Transform visionCone;
+
 	// Use this for initialization
-	void Start () {
-		
+	void Start () 
+	{
+		visionCone = transform.Find ("line of sight");
 	}
 	
 	// Update is called once per frame
 	void Update () 
-	{
-		VisionCone ();	
+	{	
+		VisionCheck();
 		if (Mathf.Abs (Vector3.Distance (transform.position, target)) < 0.25f && hasTarget)
 			hasTarget = false;
 		Movement ();
+		ResizeLineOfSight ();
 	}
 
 	void Movement()
@@ -39,81 +46,60 @@ public class GuardAI : MonoBehaviour
 		}
 	}
 
-	void VisionCone()
+	void ResizeLineOfSight()
 	{
-		//Physics2D.Linecast(transform.position)
+		//0.6697227 base, when length is 5
+		visionCone.transform.localScale = new Vector3(0.6697227f * sightRange/5, 0.6697227f * sightRange/5, 1);
+	}
 
-		RaycastHit2D[] hits = new RaycastHit2D[11];
-
-		hits[0] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 4.92f) + (transform.right * -0.87f), visionLayers);
-		hits[1] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 4.7f) + (transform.right * -1.71f), visionLayers);
-		hits[2] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 4.33f) + (transform.right * -2.5f), visionLayers);
-		hits[3] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 3.83f) + (transform.right * -3.21f), visionLayers);
-		hits[4] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 3.21f) + (transform.right * -3.83f), visionLayers);
-		hits[5] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 5), visionLayers);
-		hits[6] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 4.92f) + (transform.right * 0.87f), visionLayers);
-		hits[7] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 4.7f) + (transform.right * 1.71f), visionLayers);
-		hits[8] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 4.33f) + (transform.right * 2.5f), visionLayers);
-		hits[9] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 3.83f) + (transform.right * 3.21f), visionLayers);
-		hits[10] = Physics2D.Linecast (transform.position, transform.position + (transform.up * 3.21f) + (transform.right * 3.83f), visionLayers);
-
-		if(hits[0].collider != null)
-			Debug.DrawLine (transform.position, hits [0].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 4.92f) + (transform.right * -0.87f), Color.yellow);
-		if(hits[1].collider != null)
-			Debug.DrawLine (transform.position, hits [1].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 4.7f) + (transform.right * -1.71f), Color.yellow);
-		if(hits[2].collider != null)
-			Debug.DrawLine (transform.position, hits [2].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 4.33f) + (transform.right * -2.5f), Color.yellow);
-		if(hits[3].collider != null)
-			Debug.DrawLine (transform.position, hits [3].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 3.83f) + (transform.right * -3.21f), Color.yellow);
-		if(hits[4].collider != null)
-			Debug.DrawLine (transform.position, hits [4].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 3.21f) + (transform.right * -3.83f), Color.yellow);
-		if(hits[5].collider != null)
-			Debug.DrawLine (transform.position, hits [5].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 5), Color.yellow);
-		if(hits[6].collider != null)
-			Debug.DrawLine (transform.position, hits [6].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 4.92f) + (transform.right * 0.87f), Color.yellow);
-		if(hits[7].collider != null)
-			Debug.DrawLine (transform.position, hits [7].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 4.7f) + (transform.right * 1.71f), Color.yellow);
-		if(hits[8].collider != null)
-			Debug.DrawLine (transform.position, hits [8].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 4.33f) + (transform.right * 2.5f), Color.yellow);
-		if(hits[9].collider != null)
-			Debug.DrawLine (transform.position, hits [9].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 3.83f) + (transform.right * 3.21f), Color.yellow);
-		if(hits[10].collider != null)
-			Debug.DrawLine (transform.position, hits [10].point, Color.red);
-		else
-			Debug.DrawLine (transform.position, transform.position + (transform.up * 3.21f) + (transform.right * 3.83f), Color.yellow);
-
-		for(int i = 0; i < hits.Length; i++)
+	void VisionCheck()
+	{
+		float currentAngle = lineOfSight * 0.5f;
+		while(currentAngle >= 0)
 		{
-			if(hits[i].collider != null)
+			//check left side
+			RaycastHit2D hit1 = (Physics2D.Raycast (transform.position, Quaternion.Euler (0, 0, currentAngle) * (transform.up), sightRange, visionLayers));
+			if (hit1.collider != null) 
 			{
-				if (hits [i].collider.CompareTag ("Player")) 
+				Debug.DrawLine (transform.position, hit1.point, Color.red);
+				if(hit1.collider.CompareTag("Player"))
 				{
-					target = hits [i].collider.transform.position;
+					target = hit1.collider.transform.position;
 					hasTarget = true;
 				}
 			}
+			else
+				Debug.DrawRay (transform.position, Quaternion.Euler (0, 0, currentAngle) * (transform.up) * (sightRange), Color.green);
 
+			//check right side
+			RaycastHit2D hit2 = (Physics2D.Raycast (transform.position, Quaternion.Euler (0, 0, -currentAngle) * (transform.up), sightRange, visionLayers));
+			if (hit2.collider != null) 
+			{
+				Debug.DrawLine (transform.position, hit2.point, Color.red);
+				if(hit2.collider.CompareTag("Player"))
+				{
+					target = hit2.collider.transform.position;
+					hasTarget = true;
+				}
+			}
+			else
+				Debug.DrawRay (transform.position, Quaternion.Euler (0, 0, -currentAngle) * (transform.up) * (sightRange), Color.green);
+			currentAngle -= (lineOfSight / (float)numberOfChecks);
 		}
 
+		//check directly forward
+		RaycastHit2D hit3 = (Physics2D.Raycast (transform.position, transform.up, sightRange, visionLayers));
+		if (hit3.collider != null) 
+		{
+			Debug.DrawLine (transform.position, hit3.point, Color.red);
+			if(hit3.collider.CompareTag("Player"))
+			{
+				target = hit3.collider.transform.position;
+				hasTarget = true;
+			}
+		}
+		else
+			Debug.DrawRay (transform.position, transform.up * sightRange, Color.green);
+		
 	}
 }

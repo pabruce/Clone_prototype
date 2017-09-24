@@ -90,7 +90,6 @@ public class Player : Controller
 			lenseActive = true;
 			lenseStatusInd.color = Color.green;
 		}
-
 		if (lenseActive)
 			lenseStatusInd.fillAmount = lenseResetTimer / lenseResetTimerMax;
 		else
