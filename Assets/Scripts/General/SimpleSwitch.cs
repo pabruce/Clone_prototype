@@ -16,7 +16,7 @@ public class SimpleSwitch : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update () 
+	protected virtual void Update () 
 	{
 		UpdateSwitchDisplay(); 
 
@@ -27,13 +27,13 @@ public class SimpleSwitch : MonoBehaviour
 		}
 	}
 
-	public void ToggleSwitch()
+	public virtual void ToggleSwitch()
 	{
 		activated = !activated;
 		SwitchInteract(); 
 	}
 
-	void UpdateSwitchDisplay()
+	protected virtual void UpdateSwitchDisplay()
 	{
 		if (activated)
 		{
@@ -45,7 +45,7 @@ public class SimpleSwitch : MonoBehaviour
 		}
 	}
 
-	void SwitchInteract()
+	protected virtual void SwitchInteract()
 	{
 		foreach (Interactable i in GetComponents<Interactable>())
 		{
