@@ -50,6 +50,8 @@ public class Player : Controller
 	private float lenseCooldownMax = 3f;
 	[SerializeField]
 	private Image lenseStatusInd;
+	[SerializeField]
+	private int playerLayer;
 
 	public bool canMove = true;
 
@@ -66,7 +68,12 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
-		
+		//disable the layer on this camera
+		int mask = subjectCamera.cullingMask;
+		int toggleMask = 0;
+		for (int i = 1; i <= 2; i++)
+			toggleMask = toggleMask & LayerMask.NameToLayer ("SpecialWall" + i);
+		subjectCamera.cullingMask = mask & ~(1 << toggleMask);
 	}
 
 	private void updatePrime()
@@ -102,10 +109,11 @@ public class Player : Controller
 	private void toggleLenseView()
 	{
 		int mask = subjectCamera.cullingMask;
-		if ((mask & 1 << 10) != 0)
-			subjectCamera.cullingMask = mask & ~(1 << 10);
+		int toggleMask = LayerMask.NameToLayer ("SpecialWall" + playerLayer);
+		if ((mask & 1 << toggleMask) != 0)
+			subjectCamera.cullingMask = mask & ~(1 << toggleMask);
 		else
-			subjectCamera.cullingMask = mask | 1 << 10;
+			subjectCamera.cullingMask = mask | 1 << toggleMask;
 	}
 
 	private void fixedUpdatePrime()
