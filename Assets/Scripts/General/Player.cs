@@ -6,29 +6,15 @@ using UnityEngine.UI;
 
 public class Player : Controller
 {
+	/* Instance Vars */
+
 	[SerializeField]
 	private int playerNumber = 1;
 
 	public bool MechActive = false;
 
-	/* Instance Vars */
-
-	/*
-	[SerializeField]
-	private KeyCode key_up;
-	[SerializeField]
-	private KeyCode key_left;
-	[SerializeField]
-	private KeyCode key_down;
-	[SerializeField]
-	private KeyCode key_right;
-	*/
 	[SerializeField]
 	private KeyCode use_ability;
-	/*
-	[SerializeField]
-	private string abilityName;
-	*/
 
 	// A list of the states
 	private BehaviorState[] states;
@@ -65,19 +51,24 @@ public class Player : Controller
 		direction = Vector2.zero;
 	}
 
-	// Inject some test data into self
+	// Toggle the special view layers off
 	public void Start()
 	{
+		//don't do anyting if we have no camera to modify
+		if (subjectCamera == null)
+			return;
+
 		//disable the layer on this camera
 		int mask = subjectCamera.cullingMask;
 		int toggleMask = 0;
 		for (int i = 1; i <= 2; i++)
-			toggleMask = toggleMask & LayerMask.NameToLayer ("SpecialWall" + i);
-		subjectCamera.cullingMask = mask & ~(1 << toggleMask);
+			toggleMask = toggleMask | 1 << LayerMask.NameToLayer ("SpecialWall" + i);
+		subjectCamera.cullingMask = mask & ~(toggleMask);
 	}
 
 	private void updatePrime()
 	{
+		//don't do anyting if we have no camera to modify
 		if (subjectCamera == null)
 			return;
 
@@ -85,6 +76,7 @@ public class Player : Controller
 		lenseResetTimer -= Time.deltaTime;
 		if (lenseResetTimer <= 0f && lenseActive)
 		{
+			//end the lense and start the cooldown
 			toggleLenseView ();
 			lenseActive = false;
 			lenseStatusInd.color = Color.red;
@@ -92,20 +84,22 @@ public class Player : Controller
 		}
 		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive && lenseCooldown <= 0f)
 		{
+			//start the lense and the effect duration timer
 			toggleLenseView ();
 			lenseResetTimer = lenseResetTimerMax;
 			lenseActive = true;
 			lenseStatusInd.color = Color.green;
 		}
-		if (lenseActive)
+		if (lenseActive) //set fill amount by timer percentage
 			lenseStatusInd.fillAmount = lenseResetTimer / lenseResetTimerMax;
-		else
+		else //set fill amount by cooldown percentage
 		{
 			float perc = lenseCooldown / lenseCooldownMax;
 			lenseStatusInd.fillAmount = perc > 0f ? perc : 0f;
 		}
 	}
 
+	// Flip the bit in the camera mask that corresponds to this player's special layer
 	private void toggleLenseView()
 	{
 		int mask = subjectCamera.cullingMask;
