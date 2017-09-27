@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Player : Controller
 {
 	[SerializeField]
-	private int playerNumber = 1;
+	public int playerNumber = 1;
 
 	public bool MechActive = false;
 

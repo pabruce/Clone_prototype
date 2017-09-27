@@ -12,7 +12,7 @@ public class CameraManager : MonoBehaviour
 	private Transform cam;
 
 	[SerializeField]
-	private int playerNumber = 1;
+	public int playerNumber = 1;
 
 	// Target stuff
 	public Transform target;
