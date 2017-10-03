@@ -6,12 +6,17 @@ using UnityEngine.UI;
 
 public class Player : Controller
 {
+	private int numberOfInputs;
+	private KeyCode nextButtonNumber;
+
 	/* Instance Vars */
 
 	[SerializeField]
 	public int playerNumber = 1;
 
 	public bool MechActive = false;
+
+	public float cloneTimer;
 
 	[SerializeField]
 	private KeyCode use_ability;
@@ -134,5 +139,17 @@ public class Player : Controller
 	private void lateUpdatePrime()
 	{
 
+	}
+
+	void Wake()
+	{
+		// Initialize the queue at start
+		Queue<KeyCode> userInputs = new Queue<KeyCode>();
+
+		// On user input (nuberOfInput is of type KeyCode)
+		userInputs.Enqueue(numberOfInputs);     // Enqueue(0) for Button 1
+
+		// On "Action"
+		nextButtonNumber = userInputs.Dequeue();
 	}
 }
