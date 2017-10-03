@@ -26,15 +26,28 @@ public class Player : Controller
 
 	// Clone variables
 	[SerializeField]
+	private float cloneTimerMax;
 	private float cloneTimer;
 	private Queue<KeyCode> userInputs;
+
+	private BehaviorState normal;
+	private BehaviorState passive;
+	private BehaviorState recording;
+	private BehaviorState playing;
+
+	private GameObject clone;
 
 	/* Instance Methods */
 	public override void Awake ()
 	{
 		canMove = true;
 		base.Awake ();
-		setState (new BehaviorState("prime", this.updatePrime, this.fixedUpdatePrime, this.lateUpdatePrime));
+		normal = new BehaviorState("normal", this.normal_update, this.fupdate, this.lupdate);
+		passive = new BehaviorState ("passive", this.passive_update, this.fupdate, this.lupdate);
+		recording = new BehaviorState ("recording", this.recording_update, this.fupdate, this.lupdate);
+		playing = new BehaviorState ("playing", this.playing_update, this.fupdate, this.lupdate);
+
+		setState (normal);
 
 		direction = Vector2.zero;
 
@@ -44,15 +57,30 @@ public class Player : Controller
 	// Toggle the special view layers off
 	public void Start()
 	{
-		
+
 	}
 
-	private void updatePrime()
+	private void normal_update()
 	{
-		
+
 	}
 
-	private void fixedUpdatePrime()
+	private void passive_update()
+	{
+
+	}
+
+	private void recording_update()
+	{
+
+	}
+
+	private void playing_update()
+	{
+
+	}
+
+	private void fupdate()
 	{
 		//movement
 		Vector2 movementVector = Vector2.zero;
@@ -66,13 +94,13 @@ public class Player : Controller
 			physbody.AddForce (movementVector * movespeed.value);
 		else
 			physbody.velocity = Vector2.zero;
-		
+
 		if (movementVector != Vector2.zero)
 			direction = movementVector;
 		facePoint (direction + (Vector2)transform.position);
 	}
 
-	private void lateUpdatePrime()
+	private void lupdate()
 	{
 
 	}
