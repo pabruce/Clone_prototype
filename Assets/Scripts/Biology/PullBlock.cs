@@ -33,16 +33,16 @@ public class PullBlock : MonoBehaviour
 		switch(direction)
 		{
 		case Directions.UP:
-			rb2d.AddForce (transform.up * pushForce);
+			rb2d.AddForce (Vector3.up * pushForce);
 			break;
 		case Directions.RIGHT:
-			rb2d.AddForce (transform.right * pushForce);
+			rb2d.AddForce (Vector3.right * pushForce);
 			break;
 		case Directions.LEFT:
-			rb2d.AddForce (transform.right * -1 * pushForce);
+			rb2d.AddForce (Vector3.right * -1 * pushForce);
 			break;
 		case Directions.DOWN:
-			rb2d.AddForce (transform.up * -1 * pushForce);
+			rb2d.AddForce (Vector3.up * -1 * pushForce);
 			break;
 		}
 		StartCoroutine (ResetLayer ());
@@ -51,6 +51,6 @@ public class PullBlock : MonoBehaviour
 	IEnumerator ResetLayer()
 	{
 		yield return new WaitForSeconds (0.75f);
-		gameObject.layer = 12;
+		gameObject.layer = 11;
 	}
 }
