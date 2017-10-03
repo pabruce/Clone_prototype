@@ -35,9 +35,6 @@ public class CameraManager : MonoBehaviour
 
 	public void Update()
 	{
-		if (Input.GetKey (KeyCode.Space)) //DEBUG
-			shakeCamera (0.1f, 0.5f);
-
 		//look ahead
 		Vector3 lookAheadPos = new Vector3 (Mathf.Round(Input.GetAxis ("RightH" + playerNumber)), Mathf.Round(Input.GetAxis ("RightV" + playerNumber)), 0f) * lookAheadMagnitude;
 		cam.localPosition = Vector3.Lerp (cam.localPosition, lookAheadPos, Time.deltaTime * lookAheadMagnitude);

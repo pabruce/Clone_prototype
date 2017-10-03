@@ -17,12 +17,6 @@ public class PushHeavyBlock : MonoBehaviour
 			return;
 		Player playerScript = character.GetComponent<Player> ();
 		Itemgrabber grabber = character.GetComponent<Itemgrabber> ();
-
-		if (((playerScript.MechActive == true && isHeavy) || !isHeavy)) 
-		{
-			grabber.boxToGrab = this;
-		}
-
 	}
 
 	void OnTriggerExit2D(Collider2D col)
@@ -34,11 +28,6 @@ public class PushHeavyBlock : MonoBehaviour
 
 		Player playerScript = character.GetComponent<Player> ();
 		Itemgrabber grabber = character.GetComponent<Itemgrabber> ();
-
-		if (((playerScript.MechActive == true && isHeavy) || !isHeavy)) 
-		{
-			grabber.boxToGrab = null;
-		}
 	}
 }
 		
