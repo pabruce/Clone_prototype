@@ -10,7 +10,6 @@ public class GrappleHook : MonoBehaviour {
 	public KeyCode launchKey;
 
 	public bool canGrabItems;
-	public bool canPullBlocks;
 	public bool canPullPlayer;
 
 	[HideInInspector]
@@ -127,7 +126,7 @@ public class GrappleHook : MonoBehaviour {
 				player.layer = 20;
 				isPullingPlayer = true;
 			}
-			else if(coll.collider.CompareTag("PullBlock") && canPullBlocks)
+			else if(coll.collider.CompareTag("PullBlock"))
 			{
 				isRetracting = true;
 				float xDist = coll.transform.position.x - player.transform.position.x; //if xDist is negative, player is right, else player is left
