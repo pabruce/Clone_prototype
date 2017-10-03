@@ -6,22 +6,20 @@ using UnityEngine.UI;
 
 public class Player : Controller
 {
-	public bool MechActive = false;
+	private int numberOfInputs;
+	private KeyCode nextButtonNumber;
 
 	/* Instance Vars */
 
 	[SerializeField]
-	private KeyCode key_up;
-	[SerializeField]
-	private KeyCode key_left;
-	[SerializeField]
-	private KeyCode key_down;
-	[SerializeField]
-	private KeyCode key_right;
+	public int playerNumber = 1;
+
+	public bool MechActive = false;
+
+	public float cloneTimer;
+
 	[SerializeField]
 	private KeyCode use_ability;
-	[SerializeField]
-	private string abilityName;
 
 	// A list of the states
 	private BehaviorState[] states;
@@ -43,6 +41,8 @@ public class Player : Controller
 	private float lenseCooldownMax = 3f;
 	[SerializeField]
 	private Image lenseStatusInd;
+	[SerializeField]
+	private int playerLayer;
 
 	public bool canMove = true;
 
@@ -56,14 +56,24 @@ public class Player : Controller
 		direction = Vector2.zero;
 	}
 
-	// Inject some test data into self
+	// Toggle the special view layers off
 	public void Start()
 	{
-		
+		//don't do anyting if we have no camera to modify
+		if (subjectCamera == null)
+			return;
+
+		//disable the layer on this camera
+		int mask = subjectCamera.cullingMask;
+		int toggleMask = 0;
+		for (int i = 1; i <= 2; i++)
+			toggleMask = toggleMask | 1 << LayerMask.NameToLayer ("SpecialWall" + i);
+		subjectCamera.cullingMask = mask & ~(toggleMask);
 	}
 
 	private void updatePrime()
 	{
+		//don't do anyting if we have no camera to modify
 		if (subjectCamera == null)
 			return;
 
@@ -71,6 +81,7 @@ public class Player : Controller
 		lenseResetTimer -= Time.deltaTime;
 		if (lenseResetTimer <= 0f && lenseActive)
 		{
+			//end the lense and start the cooldown
 			toggleLenseView ();
 			lenseActive = false;
 			lenseStatusInd.color = Color.red;
@@ -78,27 +89,30 @@ public class Player : Controller
 		}
 		if (Input.GetKeyDown (use_ability) && subjectCamera != null && !lenseActive && lenseCooldown <= 0f)
 		{
+			//start the lense and the effect duration timer
 			toggleLenseView ();
 			lenseResetTimer = lenseResetTimerMax;
 			lenseActive = true;
 			lenseStatusInd.color = Color.green;
 		}
-		if (lenseActive)
+		if (lenseActive) //set fill amount by timer percentage
 			lenseStatusInd.fillAmount = lenseResetTimer / lenseResetTimerMax;
-		else
+		else //set fill amount by cooldown percentage
 		{
 			float perc = lenseCooldown / lenseCooldownMax;
 			lenseStatusInd.fillAmount = perc > 0f ? perc : 0f;
 		}
 	}
 
+	// Flip the bit in the camera mask that corresponds to this player's special layer
 	private void toggleLenseView()
 	{
 		int mask = subjectCamera.cullingMask;
-		if ((mask & 1 << 10) != 0)
-			subjectCamera.cullingMask = mask & ~(1 << 10);
+		int toggleMask = LayerMask.NameToLayer ("SpecialWall" + playerLayer);
+		if ((mask & 1 << toggleMask) != 0)
+			subjectCamera.cullingMask = mask & ~(1 << toggleMask);
 		else
-			subjectCamera.cullingMask = mask | 1 << 10;
+			subjectCamera.cullingMask = mask | 1 << toggleMask;
 	}
 
 	private void fixedUpdatePrime()
@@ -106,28 +120,16 @@ public class Player : Controller
 		//movement
 		Vector2 movementVector = Vector2.zero;
 
-		bool up = Input.GetKey(key_up); //TODO swap for proper bindings later
-		bool left = Input.GetKey(key_left);
-		bool down = Input.GetKey(key_down);
-		bool right = Input.GetKey(key_right);
+		float horizontal = Input.GetAxis("Horizontal" + playerNumber);
+		float vertical = Input.GetAxis("Vertical" + playerNumber);
 
-		if (up)
-			movementVector += Vector2.up;
-		if (left)
-			movementVector += Vector2.left;
-		if (down)
-			movementVector += Vector2.down;
-		if (right)
-			movementVector += Vector2.right;
+		movementVector = new Vector2 (horizontal, vertical);
 
-		if(!canMove)
-		{
+		if(canMove)
+			physbody.AddForce (movementVector * movespeed.value);
+		else
 			physbody.velocity = Vector2.zero;
-			return;
-		}
-
-		physbody.AddForce (movementVector * movespeed.value);
-
+		
 		if (movementVector != Vector2.zero)
 			direction = movementVector;
 		facePoint (direction + (Vector2)transform.position);
@@ -137,5 +139,17 @@ public class Player : Controller
 	private void lateUpdatePrime()
 	{
 
+	}
+
+	void Wake()
+	{
+		// Initialize the queue at start
+		Queue<KeyCode> userInputs = new Queue<KeyCode>();
+
+		// On user input (nuberOfInput is of type KeyCode)
+		userInputs.Enqueue(numberOfInputs);     // Enqueue(0) for Button 1
+
+		// On "Action"
+		nextButtonNumber = userInputs.Dequeue();
 	}
 }
