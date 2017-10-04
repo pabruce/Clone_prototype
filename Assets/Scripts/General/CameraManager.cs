@@ -5,6 +5,8 @@ using UnityEngine;
 public class CameraManager : MonoBehaviour
 {
 	/* Static Vars */
+	private static CameraManager instance;
+	public static CameraManager scene_cam { get { return instance; } }
 
 	/* Instance Vars */
 
@@ -30,6 +32,11 @@ public class CameraManager : MonoBehaviour
 	/* Instance Methods */
 	public void Awake()
 	{
+		if (instance == null)
+			instance = this;
+		else
+			Destroy (gameObject);
+		
 		cam = transform.GetChild (0);
 	}
 

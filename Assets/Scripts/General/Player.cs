@@ -6,16 +6,18 @@ using UnityEngine.UI;
 
 public class Player : Controller
 {
-	private int numberOfInputs;
-	private KeyCode nextButtonNumber;
-
 	/* Instance Vars */
 
 	[SerializeField]
-	private KeyCode use_ability;
-
-	// A list of the states
-	private BehaviorState[] states;
+	private KeyCode up = KeyCode.W;
+	[SerializeField]
+	private KeyCode left = KeyCode.A;
+	[SerializeField]
+	private KeyCode down = KeyCode.S;
+	[SerializeField]
+	private KeyCode right = KeyCode.D;
+	[SerializeField]
+	private KeyCode use_ability = KeyCode.Space;
 
 	private Vector2 direction;
 
@@ -28,7 +30,9 @@ public class Player : Controller
 	[SerializeField]
 	private float cloneTimerMax;
 	private float cloneTimer;
-	private Queue<KeyCode> userInputs;
+
+	private Queue<KeyCode[]> updateInputs;
+	private Queue<KeyCode[]> fixedInputs;
 
 	private BehaviorState normal;
 	private BehaviorState passive;
@@ -36,59 +40,175 @@ public class Player : Controller
 	private BehaviorState playing;
 
 	private GameObject clone;
+	private GameObject selfPref;
+
+	private Vector3 replayStartPos;
+	private Quaternion replayStartRot;
+
+	//DEBUG demo update rate difference
+	private int updates;
+	private int fixedUpdates;
 
 	/* Instance Methods */
 	public override void Awake ()
 	{
-		canMove = true;
 		base.Awake ();
-		normal = new BehaviorState("normal", this.normal_update, this.fupdate, this.lupdate);
-		passive = new BehaviorState ("passive", this.passive_update, this.fupdate, this.lupdate);
-		recording = new BehaviorState ("recording", this.recording_update, this.fupdate, this.lupdate);
-		playing = new BehaviorState ("playing", this.playing_update, this.fupdate, this.lupdate);
+
+		canMove = true;
+
+		normal = new BehaviorState("normal", this.normal_update, this.normal_fupdate, this.lupdate);
+		passive = new BehaviorState ("passive", this.passive_update, this.passive_fupdate, this.lupdate);
+		recording = new BehaviorState ("recording", this.recording_update, this.recording_fupdate, this.lupdate);
+		playing = new BehaviorState ("playing", this.playing_update, this.playing_fupdate, this.lupdate);
 
 		setState (normal);
 
 		direction = Vector2.zero;
 
-		userInputs = new Queue<KeyCode>();
+		updateInputs = new Queue<KeyCode[]>();
+		fixedInputs = new Queue<KeyCode[]> ();
+
+		clone = null;
+		selfPref = Resources.Load<GameObject> ("Player");
+
+		replayStartPos = Vector3.zero;
+		replayStartRot = Quaternion.identity;
 	}
 
-	// Toggle the special view layers off
 	public void Start()
 	{
-
+		
 	}
 
+	// --- Normal ---
 	private void normal_update()
 	{
+//		Debug.Log ("NU: " + (++updates).ToString().PadLeft(7, '0')); //DEBUG demo update rate diff
+		if (Input.GetKeyDown (use_ability))
+		{
+			if (clone != null)
+				Destroy (clone);
+			else
+			{
+				clone = Instantiate<GameObject> (selfPref, transform.position, transform.rotation);
+				Physics2D.IgnoreCollision (GetComponent<Collider2D> (), clone.GetComponent<Collider2D> ());
 
+				//change the color of the clone
+				SpriteRenderer cloneSR = clone.GetComponent<SpriteRenderer> ();
+				Color cloneCol = cloneSR.color;
+				cloneSR.color = new Color (cloneCol.r, cloneCol.g, cloneCol.b, 0.5f);
+
+				//set the states of the clone and the player
+				Player other = clone.GetComponent<Player> ();
+				other.setState (other.recording);
+				other.cloneTimer = cloneTimerMax;
+				other.clone = gameObject;
+				setState (passive);
+
+				CameraManager.scene_cam.setTarget (clone.transform);
+			}
+		}
 	}
 
+	private void normal_fupdate()
+	{
+		float horizontal = Input.GetKey (left) ? -1f : Input.GetKey (right) ? 1f : 0f;
+		float vertical = Input.GetKey (down) ? -1f : Input.GetKey (up) ? 1f : 0f;
+		move (horizontal, vertical);
+
+//		Debug.Log ("FU: " + (++fixedUpdates).ToString().PadLeft(7, '0')); //DEBUG demo update rate diff
+	}
+
+	// --- Passive ---
 	private void passive_update()
 	{
+		
+	}
+
+	private void passive_fupdate()
+	{
 
 	}
 
+	// --- Recording ---
 	private void recording_update()
 	{
+		cloneTimer -= Time.deltaTime;
+		if (cloneTimer <= 0f)
+		{
+			replayStartPos = transform.position = clone.transform.position;
+			replayStartRot = transform.rotation = clone.transform.rotation;
+			//fixedInputs.Enqueue ( //TODO );
+			//updateInputs.Enqueue ( //TODO );
 
+			Player other = clone.GetComponent<Player> ();
+			other.setState (other.normal);
+			CameraManager.scene_cam.setTarget (clone.transform);
+
+			setState (playing);
+		}
+		normal.update ();
+		fixedInputs.Enqueue (readKeyPresses());
 	}
 
+	private void recording_fupdate()
+	{
+		normal.fixedUpdate ();
+		fixedInputs.Enqueue (readKeyPresses());
+	}
+
+	// --- Playing ---
 	private void playing_update()
 	{
-
+		//if(updateInputs.Peek()[0] != null)
+		//updateInputs.Enqueue (updateInputs.Dequeue ());
 	}
 
-	private void fupdate()
+	private void playing_fupdate()
 	{
-		//movement
-		Vector2 movementVector = Vector2.zero;
+		//DEBUG keycode array printout
+		string str = "";
+		foreach (KeyCode k in fixedInputs.Peek ())
+			str += k.ToString () + "\n";
+		str += "--------------------";
+		Debug.Log (str);
 
-		float horizontal = Input.GetAxis("Horizontal" + 1);
-		float vertical = Input.GetAxis("Vertical" + 1);
+		float horizontal = keyRecorded (left, fixedInputs) ? -1f : keyRecorded (right, fixedInputs) ? 1f : 0f;
+		float vertical = keyRecorded (down, fixedInputs) ? -1f : keyRecorded (down, fixedInputs) ? 1f : 0f;
+		move (horizontal, vertical);
+		fixedInputs.Enqueue (fixedInputs.Dequeue ());
+	}
 
-		movementVector = new Vector2 (horizontal, vertical);
+	private void lupdate()
+	{
+//		Debug.Log ("-------------------"); //DEBUG demo update rate diff
+	}
+
+	// --- Utilities ---
+
+	// Check if a key was pressed in the current frame of the recording
+	private bool keyRecorded(KeyCode key, Queue<KeyCode[]> tape)
+	{
+		foreach (KeyCode k in tape.Peek())
+			if (k == key)
+				return true;
+		return false;
+	}
+
+	// Read the keys currently pressed and add them to an array for recording
+	private KeyCode[] readKeyPresses()
+	{
+		List<KeyCode> keys = new List<KeyCode> ();
+		foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
+			if (Input.GetKey (key))
+				keys.Add (key);
+		return keys.ToArray ();
+	}
+
+	// Take a dX and dY and translate it into rigidbody movement
+	private void move(float horizontal, float vertical)
+	{
+		Vector2 movementVector = new Vector2 (horizontal, vertical);
 
 		if(canMove)
 			physbody.AddForce (movementVector * movespeed.value);
@@ -98,10 +218,5 @@ public class Player : Controller
 		if (movementVector != Vector2.zero)
 			direction = movementVector;
 		facePoint (direction + (Vector2)transform.position);
-	}
-
-	private void lupdate()
-	{
-
 	}
 }
