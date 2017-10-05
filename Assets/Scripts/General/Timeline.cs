@@ -61,6 +61,11 @@ public class Timeline<T>
 		}
 		events.Add (new Event<T> (time, action));
 	}
+	public void addEvent(float time, T[] actions)
+	{
+		foreach (T action in actions)
+			addEvent (time, action);
+	}
 
 	/// <summary>
 	/// Returns the simulation  to the beginning without clearing any events
@@ -100,7 +105,7 @@ public class Timeline<T>
 		List<T> actionList = new List<T> ();
 
 		//check for events that occur between 0 and the current sim time
-		while (simulatedTime > events [eventIndex].time)
+		while (simulatedTime >= events [eventIndex].time)
 		{
 			actionList.Add (events [eventIndex].action);
 			eventIndex++;
