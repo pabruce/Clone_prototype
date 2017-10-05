@@ -129,6 +129,28 @@ public class Timeline<T>
 		actions = actionList.ToArray ();
 		return true;
 	}
+		
+	/// <summary>
+	/// Create a deep clone of this instance, specifying if the simulation 
+	/// progress of the original should be kept.
+	/// </summary>
+	/// <param name="keepSim">Keep the simulation progress</param>
+	public Timeline<T> clone(bool keepSim)
+	{
+		Timeline<T> clone = new Timeline<T> ();
+
+		if (keepSim)
+		{
+			clone.simulatedTime = simulatedTime;
+			clone.eventIndex = eventIndex;
+		}
+		clone.looping = looping;
+
+		foreach (Event<T> e in events)
+			clone.events.Add (e);
+
+		return clone;
+	}
 
 	/// <summary>
 	/// A lightweight object that represents a point of interest in a Timeline.
