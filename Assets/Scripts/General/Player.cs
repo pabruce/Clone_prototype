@@ -35,7 +35,10 @@ public class Player : Controller
 
 	private Timeline<KeyCode> updateInputs;
 	private Timeline<KeyCode> fixedInputs;
+<<<<<<< HEAD
 	private GrappleHook grapple;
+=======
+>>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 
 	private BehaviorState normal;
 	private BehaviorState passive;
@@ -165,6 +168,10 @@ public class Player : Controller
 		{
 			updateInputs.addEvent (cloneTimerNormal, keys);
 		}
+<<<<<<< HEAD
+=======
+		//updateInputs.Enqueue (readKeyPresses());
+>>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 	}
 
 	private void recording_fupdate()
@@ -177,6 +184,11 @@ public class Player : Controller
 		{
 			fixedInputs.addEvent (cloneTimerFixed, keys);
 		}
+<<<<<<< HEAD
+=======
+
+		//fixedInputs.Enqueue (readKeyPresses());
+>>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 	}
 
 	// --- Playing ---
@@ -224,6 +236,10 @@ public class Player : Controller
 				keys.Add (key);
 				//cloneTimer += Time.deltaTime;
 			}
+<<<<<<< HEAD
+=======
+
+>>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 		return keys.ToArray ();
 	}
 
