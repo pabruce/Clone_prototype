@@ -29,10 +29,11 @@ public class Player : Controller
 	// Clone variables
 	[SerializeField]
 	private float cloneTimerMax;
-	private float cloneTimer;
+	private float cloneTimerFixed;
+	private float cloneTimerNormal;
 
-	private Queue<KeyCode[]> updateInputs;
-	private Queue<KeyCode[]> fixedInputs;
+	private Timeline<KeyCode> updateInputs;
+	private Timeline<KeyCode> fixedInputs;
 
 	private BehaviorState normal;
 	private BehaviorState passive;
@@ -65,8 +66,11 @@ public class Player : Controller
 
 		direction = Vector2.zero;
 
-		updateInputs = new Queue<KeyCode[]>();
-		fixedInputs = new Queue<KeyCode[]> ();
+		updateInputs = new Timeline<KeyCode>();
+		fixedInputs = new Timeline<KeyCode> ();
+
+		fixedInputs.setLooping (true);
+		updateInputs.setLooping (true);
 
 		clone = null;
 		selfPref = Resources.Load<GameObject> ("Player");
@@ -101,7 +105,8 @@ public class Player : Controller
 				//set the states of the clone and the player
 				Player other = clone.GetComponent<Player> ();
 				other.setState (other.recording);
-				other.cloneTimer = cloneTimerMax;
+				other.cloneTimerFixed = 0f;
+				other.cloneTimerNormal = 0f;
 				other.clone = gameObject;
 				setState (passive);
 
@@ -133,8 +138,9 @@ public class Player : Controller
 	// --- Recording ---
 	private void recording_update()
 	{
-		cloneTimer -= Time.deltaTime;
-		if (cloneTimer <= 0f)
+		//cloneTimer -= Time.deltaTime;
+		cloneTimerNormal += Time.deltaTime;
+		if (cloneTimerNormal >= cloneTimerMax)
 		{
 			replayStartPos = transform.position = clone.transform.position;
 			replayStartRot = transform.rotation = clone.transform.rotation;
@@ -148,13 +154,27 @@ public class Player : Controller
 			setState (playing);
 		}
 		normal.update ();
-		fixedInputs.Enqueue (readKeyPresses());
+		KeyCode[] keys = readKeyPresses ();
+
+		if (keys.Length > 0f) 
+		{
+			updateInputs.addEvent (cloneTimerNormal, keys);
+		}
+		//updateInputs.Enqueue (readKeyPresses());
 	}
 
 	private void recording_fupdate()
 	{
 		normal.fixedUpdate ();
-		fixedInputs.Enqueue (readKeyPresses());
+		cloneTimerFixed += Time.fixedDeltaTime;
+		KeyCode[] keys = readKeyPresses ();
+
+		if (keys.Length > 0f) 
+		{
+			fixedInputs.addEvent (cloneTimerFixed, keys);
+		}
+
+		//fixedInputs.Enqueue (readKeyPresses());
 	}
 
 	// --- Playing ---
@@ -168,15 +188,12 @@ public class Player : Controller
 	{
 		//DEBUG keycode array printout
 		string str = "";
-		foreach (KeyCode k in fixedInputs.Peek ())
-			str += k.ToString () + "\n";
-		str += "--------------------";
-		Debug.Log (str);
+		KeyCode[] dump_keys;
+		fixedInputs.simulate (Time.fixedDeltaTime, out dump_keys);
 
-		float horizontal = keyRecorded (left, fixedInputs) ? -1f : keyRecorded (right, fixedInputs) ? 1f : 0f;
-		float vertical = keyRecorded (down, fixedInputs) ? -1f : keyRecorded (down, fixedInputs) ? 1f : 0f;
+		float horizontal = keyRecorded (left,dump_keys) ? -1f : keyRecorded (right, dump_keys) ? 1f : 0f;
+		float vertical = keyRecorded (down, dump_keys) ? -1f : keyRecorded (up, dump_keys) ? 1f : 0f;
 		move (horizontal, vertical);
-		fixedInputs.Enqueue (fixedInputs.Dequeue ());
 	}
 
 	private void lupdate()
@@ -187,9 +204,9 @@ public class Player : Controller
 	// --- Utilities ---
 
 	// Check if a key was pressed in the current frame of the recording
-	private bool keyRecorded(KeyCode key, Queue<KeyCode[]> tape)
+	private bool keyRecorded(KeyCode key, KeyCode[] tape)
 	{
-		foreach (KeyCode k in tape.Peek())
+		foreach (KeyCode k in tape)
 			if (k == key)
 				return true;
 		return false;
@@ -200,8 +217,12 @@ public class Player : Controller
 	{
 		List<KeyCode> keys = new List<KeyCode> ();
 		foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
-			if (Input.GetKey (key))
+			if (Input.GetKey (key)) 
+			{
 				keys.Add (key);
+				//cloneTimer += Time.deltaTime;
+			}
+
 		return keys.ToArray ();
 	}
 
