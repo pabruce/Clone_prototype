@@ -175,4 +175,84 @@ public class GrappleHook : MonoBehaviour {
 		}
 
 	}
+
+	public void Launch()
+	{
+		if (!isExtended) 
+		{
+			if(Input.GetKeyDown(launchKey) && !isExtended)
+			{
+				targetLocation = (player.transform.position + player.transform.up * range);
+				transform.SetParent (null);
+				isExtended = true;
+			}
+
+			if(isExtended && !isRetracting && !isPullingPlayer)
+			{
+				if (Vector3.Distance (transform.position, player.transform.position) < range && Vector3.Distance(transform.position, targetLocation) > 0.1f)
+				{
+					Vector3 diff = transform.position - targetLocation;
+					diff.Normalize ();
+
+					float rotation = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+					transform.rotation = Quaternion.Euler (0f, 0f, rotation + 90);
+
+					transform.Translate (Vector3.up * launchSpeed * 0.7f * Time.deltaTime);
+				}
+				else
+					isRetracting = true;
+			}
+			if(isExtended && isRetracting)
+			{
+				if(Vector3.Distance(transform.position, player.transform.position) <= 0.4f)
+				{
+					if(hasItem)
+					{
+						hasItem = false;
+						transform.DetachChildren ();
+					}
+					isExtended = false;
+					isRetracting = false;
+					transform.SetParent (player.transform);
+					transform.localPosition = Vector3.zero;
+					transform.localRotation = Quaternion.identity;
+				}
+				else
+				{
+					Vector3 diff = transform.position - player.transform.position;
+					diff.Normalize ();
+
+					float rotation = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+					transform.rotation = Quaternion.Euler (0f, 0f, rotation + 90);
+
+					transform.Translate (Vector3.up * launchSpeed * 0.7f * Time.deltaTime);
+				}
+			}
+			if(isExtended && isPullingPlayer)
+			{
+				player.GetComponent<Player> ().canMove = false;
+
+				Vector3 diff = player.transform.position - transform.position;
+				diff.Normalize ();
+
+				float rotation = Mathf.Atan2 (diff.y, diff.x) * Mathf.Rad2Deg;
+				player.transform.rotation = Quaternion.Euler (0f, 0f, rotation + 90);
+
+				player.transform.Translate (Vector3.up * launchSpeed * 0.7f * Time.deltaTime);
+
+				if(Vector3.Distance(transform.position, player.transform.position) <= 0.4f)
+				{
+					player.GetComponent<Player> ().canMove = true;
+					isExtended = false;
+					player.layer = 13;
+					isPullingPlayer = false;
+					transform.SetParent (player.transform);
+					transform.localPosition = Vector3.zero;
+					transform.localRotation = Quaternion.identity;
+				}
+			}
+
+		}
+		}
+
 }
