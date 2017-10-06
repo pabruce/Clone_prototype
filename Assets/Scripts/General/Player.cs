@@ -120,6 +120,13 @@ public class Player : Controller
 
 				CameraManager.scene_cam.setTarget (clone.transform);
 
+<<<<<<< HEAD
+=======
+				if(Input.GetKeyDown(grapple))
+					{
+						clone.GetComponentInChildren<GrappleHook> ().Launch ();
+					}
+>>>>>>> 3184eee2727a81bb4a3a9b6ed92c7d2897854e44
 			}
 		}
 	}
@@ -188,8 +195,13 @@ public class Player : Controller
 	{
 		//if(updateInputs.Peek()[0] != null)
 		//updateInputs.Enqueue (updateInputs.Dequeue ());
+<<<<<<< HEAD
 		KeyCode[] keys;
 		updateInputs.simulate(Time.deltaTime,out keys);
+=======
+		KeyCode[] grappHook;
+		updateInputs.simulate(Time.deltaTime,out grappHook);
+>>>>>>> 3184eee2727a81bb4a3a9b6ed92c7d2897854e44
 	}
 
 	private void playing_fupdate()
@@ -199,6 +211,7 @@ public class Player : Controller
 		KeyCode[] dump_keys;
 
 		fixedInputs.simulate (Time.fixedDeltaTime, out dump_keys);
+		//fixedInputs.simulate (Time.fixedDeltaTime, out grapple);
 
 		bool grappleUse = grappleUsed (grapple, dump_keys);
 		float horizontal = keyRecorded (left,dump_keys) ? -1f : keyRecorded (right, dump_keys) ? 1f : 0f;
