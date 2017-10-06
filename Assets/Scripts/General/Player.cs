@@ -18,6 +18,8 @@ public class Player : Controller
 	private KeyCode right = KeyCode.D;
 	[SerializeField]
 	private KeyCode use_ability = KeyCode.Space;
+	[SerializeField]
+	private KeyCode grapple = KeyCode.LeftShift;
 
 	private Vector2 direction;
 
@@ -35,10 +37,6 @@ public class Player : Controller
 
 	private Timeline<KeyCode> updateInputs;
 	private Timeline<KeyCode> fixedInputs;
-<<<<<<< HEAD
-	private GrappleHook grapple;
-=======
->>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 
 	private BehaviorState normal;
 	private BehaviorState passive;
@@ -95,6 +93,8 @@ public class Player : Controller
 //		Debug.Log ("NU: " + (++updates).ToString().PadLeft(7, '0')); //DEBUG demo update rate diff
 		if (Input.GetKeyDown (use_ability))
 		{
+			
+
 			if (clone != null)
 				Destroy (clone);
 			else
@@ -113,12 +113,14 @@ public class Player : Controller
 				other.cloneTimerFixed = 0f;
 				other.cloneTimerNormal = 0f;
 				other.clone = gameObject;
-				setState (passive);
-
-				clone.GetComponentInChildren<GrappleHook> ().Launch (); 	
-
+				setState (passive); 	
 
 				CameraManager.scene_cam.setTarget (clone.transform);
+
+				if(Input.GetKeyDown(grapple))
+					{
+						clone.GetComponentInChildren<GrappleHook> ().Launch ();
+					}
 			}
 		}
 	}
@@ -168,10 +170,6 @@ public class Player : Controller
 		{
 			updateInputs.addEvent (cloneTimerNormal, keys);
 		}
-<<<<<<< HEAD
-=======
-		//updateInputs.Enqueue (readKeyPresses());
->>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 	}
 
 	private void recording_fupdate()
@@ -184,11 +182,6 @@ public class Player : Controller
 		{
 			fixedInputs.addEvent (cloneTimerFixed, keys);
 		}
-<<<<<<< HEAD
-=======
-
-		//fixedInputs.Enqueue (readKeyPresses());
->>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 	}
 
 	// --- Playing ---
@@ -196,6 +189,8 @@ public class Player : Controller
 	{
 		//if(updateInputs.Peek()[0] != null)
 		//updateInputs.Enqueue (updateInputs.Dequeue ());
+		KeyCode[] grappHook;
+		updateInputs.simulate(Time.deltaTime,out grappHook);
 	}
 
 	private void playing_fupdate()
@@ -203,7 +198,9 @@ public class Player : Controller
 		//DEBUG keycode array printout
 		string str = "";
 		KeyCode[] dump_keys;
+
 		fixedInputs.simulate (Time.fixedDeltaTime, out dump_keys);
+		//fixedInputs.simulate (Time.fixedDeltaTime, out grapple);
 
 		float horizontal = keyRecorded (left,dump_keys) ? -1f : keyRecorded (right, dump_keys) ? 1f : 0f;
 		float vertical = keyRecorded (down, dump_keys) ? -1f : keyRecorded (up, dump_keys) ? 1f : 0f;
@@ -236,10 +233,6 @@ public class Player : Controller
 				keys.Add (key);
 				//cloneTimer += Time.deltaTime;
 			}
-<<<<<<< HEAD
-=======
-
->>>>>>> c580e267a265991a353ec8b3bf5ce975916cfd3e
 		return keys.ToArray ();
 	}
 
