@@ -6,11 +6,16 @@ using System.Collections.Generic;
 /// </summary>
 public class Timeline<T>
 {
+	/* Delegates */
+	public delegate void LoopEvent();
+
 	/* Instance Vars */
 	private float simulatedTime;
 	private List<Event<T>> events;
 	private int eventIndex;
 	private bool looping;
+
+	private event LoopEvent loopCompleted;
 
 	/* Instance Methods */
 	public Timeline()
@@ -28,6 +33,25 @@ public class Timeline<T>
 	public void setLooping(bool looping)
 	{
 		this.looping = looping;
+	}
+
+	/// <summary>
+	/// Add a listener to an event that fires once every time the Timeline
+	/// completes a loop.
+	/// </summary>
+	/// <param name="listener">Listener.</param>
+	public void addLoopListener(LoopEvent listener)
+	{
+		loopCompleted += listener;
+	}
+
+	/// <summary>
+	/// Remove an existing listener from the loop completed event.
+	/// </summary>
+	/// <param name="listener">Listener.</param>
+	public void removeLoopListener(LoopEvent listener)
+	{
+		loopCompleted -= listener;
 	}
 
 	/// <summary>
@@ -119,6 +143,9 @@ public class Timeline<T>
 					//may loop again
 					eventIndex = 0;
 					simulatedTime -= endTime;
+
+					if (loopCompleted != null)
+						loopCompleted ();
 				}
 				else
 					//dump the actions found and indicate that the end of the timline 
@@ -151,6 +178,8 @@ public class Timeline<T>
 
 		return clone;
 	}
+
+
 
 	/// <summary>
 	/// A lightweight object that represents a point of interest in a Timeline.

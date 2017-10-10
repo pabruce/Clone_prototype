@@ -53,6 +53,11 @@ public class Controller : MonoBehaviour
 		activeState = state;
 	}
 
+	public string getStateName()
+	{
+		return activeState.name;
+	}
+
 	protected void facePoint(Vector2 point)
 	{
 		Quaternion rot = Quaternion.LookRotation (transform.position - new Vector3(point.x, point.y, -100f), Vector3.forward);

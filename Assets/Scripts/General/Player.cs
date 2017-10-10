@@ -49,6 +49,9 @@ public class Player : Controller
 	private Vector3 replayStartPos;
 	private Quaternion replayStartRot;
 
+	[SerializeField]
+	private GrappleHook hook;
+
 	//DEBUG demo update rate difference
 	private int updates;
 	private int fixedUpdates;
@@ -93,8 +96,6 @@ public class Player : Controller
 //		Debug.Log ("NU: " + (++updates).ToString().PadLeft(7, '0')); //DEBUG demo update rate diff
 		if (Input.GetKeyDown (use_ability))
 		{
-			
-
 			if (clone != null)
 				Destroy (clone);
 			else
@@ -107,30 +108,29 @@ public class Player : Controller
 				Color cloneCol = cloneSR.color;
 				cloneSR.color = new Color (cloneCol.r, cloneCol.g, cloneCol.b, 0.5f);
 
-				if(Input.GetKeyDown(grapple))
-					clone.GetComponentInChildren<GrappleHook> ().Launch ();
-
 				//set the states of the clone and the player
 				Player other = clone.GetComponent<Player> ();
 				other.setState (other.recording);
 				other.cloneTimerFixed = 0f;
 				other.cloneTimerNormal = 0f;
 				other.clone = gameObject;
-				setState (passive); 	
+				other.fixedInputs.addLoopListener (other.resetPosition);
+
+				setState (passive);
 
 				CameraManager.scene_cam.setTarget (clone.transform);
-
-				if(Input.GetKeyDown(grapple))
-					{
-						clone.GetComponentInChildren<GrappleHook> ().Launch ();
-					}
 			}
+		}
+
+		if (Input.GetKeyDown (grapple))
+		{
+			Debug.Log (name + " is in " + getStateName ()); //DEBUG
+			hook.Launch ();
 		}
 	}
 
 	private void normal_fupdate()
 	{
-		bool grappleUse = Input.GetKey (grapple);
 		float horizontal = Input.GetKey (left) ? -1f : Input.GetKey (right) ? 1f : 0f;
 		float vertical = Input.GetKey (down) ? -1f : Input.GetKey (up) ? 1f : 0f;
 
@@ -157,15 +157,23 @@ public class Player : Controller
 		cloneTimerNormal += Time.deltaTime;
 		if (cloneTimerNormal >= cloneTimerMax)
 		{
+			//record the starting position info for the replay loop
 			replayStartPos = transform.position = clone.transform.position;
 			replayStartRot = transform.rotation = clone.transform.rotation;
 
+			//ensure that the two timelines conclude at the same time
+			updateInputs.addEvent (cloneTimerMax, KeyCode.None);
+			fixedInputs.addEvent (cloneTimerMax, KeyCode.None);
+
+			//return control to the original player
 			Player other = clone.GetComponent<Player> ();
 			other.setState (other.normal);
 			CameraManager.scene_cam.setTarget (clone.transform);
 
+			//begin replay
 			setState (playing);
 		}
+
 		normal.update ();
 		KeyCode[] keys = readKeyPresses ();
 
@@ -190,26 +198,21 @@ public class Player : Controller
 	// --- Playing ---
 	private void playing_update()
 	{
-		//if(updateInputs.Peek()[0] != null)
-		//updateInputs.Enqueue (updateInputs.Dequeue ());
-
 		KeyCode[] keys;
-		updateInputs.simulate(Time.deltaTime,out keys);
+		updateInputs.simulate(Time.deltaTime, out keys);
 
-		KeyCode[] grappHook;
-		updateInputs.simulate(Time.deltaTime,out grappHook);
+		if (keyRecorded (grapple, keys))
+		{
+			Debug.Log (name + " is in " + getStateName ()); //DEBUG
+			hook.Launch ();
+		}
 	}
 
 	private void playing_fupdate()
 	{
-		//DEBUG keycode array printout
-		string str = "";
 		KeyCode[] dump_keys;
-
 		fixedInputs.simulate (Time.fixedDeltaTime, out dump_keys);
-		//fixedInputs.simulate (Time.fixedDeltaTime, out grapple);
 
-		bool grappleUse = grappleUsed (grapple, dump_keys);
 		float horizontal = keyRecorded (left,dump_keys) ? -1f : keyRecorded (right, dump_keys) ? 1f : 0f;
 		float vertical = keyRecorded (down, dump_keys) ? -1f : keyRecorded (up, dump_keys) ? 1f : 0f;
 		move (horizontal, vertical);
@@ -231,14 +234,6 @@ public class Player : Controller
 		return false;
 	}
 
-	private bool grappleUsed(KeyCode grapple , KeyCode[] tape)
-	{
-		foreach (KeyCode k in tape)
-			if (k == grapple)
-				return true;
-		return false;
-	}
-
 	// Read the keys currently pressed and add them to an array for recording
 	private KeyCode[] readKeyPresses()
 	{
@@ -247,7 +242,6 @@ public class Player : Controller
 			if (Input.GetKey (key)) 
 			{
 				keys.Add (key);
-				//cloneTimer += Time.deltaTime;
 			}
 		return keys.ToArray ();
 	}
@@ -265,5 +259,19 @@ public class Player : Controller
 		if (movementVector != Vector2.zero)
 			direction = movementVector;
 		facePoint (direction + (Vector2)transform.position);
+	}
+
+	private void resetPosition()
+	{
+		if(clone != null)
+		{
+			transform.position = replayStartPos;
+			transform.rotation = replayStartRot;
+		}
+	}
+
+	public void OnDestroy()
+	{
+		DestroyImmediate (hook.gameObject);
 	}
 }
