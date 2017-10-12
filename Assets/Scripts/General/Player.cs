@@ -20,6 +20,8 @@ public class Player : Controller
 	private KeyCode use_ability = KeyCode.Space;
 	[SerializeField]
 	private KeyCode grapple = KeyCode.LeftShift;
+	[SerializeField]
+	private KeyCode interact = KeyCode.E;
 
 	private Vector2 direction;
 
@@ -123,9 +125,10 @@ public class Player : Controller
 		}
 
 		if (Input.GetKeyDown (grapple))
-		{
 			hook.Launch ();
-		}
+
+		if (Input.GetKeyDown (interact))
+			doInteract ();
 	}
 
 	private void normal_fupdate()
@@ -201,9 +204,10 @@ public class Player : Controller
 		updateInputs.simulate(Time.deltaTime, out keys);
 
 		if (keyRecorded (grapple, keys))
-		{
 			hook.Launch ();
-		}
+
+		if (keyRecorded (interact, keys))
+			doInteract ();
 	}
 
 	private void playing_fupdate()
@@ -265,6 +269,21 @@ public class Player : Controller
 		{
 			transform.position = replayStartPos;
 			transform.rotation = replayStartRot;
+		}
+	}
+
+	private void doInteract()
+	{
+		Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 0.5f); 
+
+		foreach (Collider2D col in hits)
+		{
+			SimpleSwitch swt = col.gameObject.GetComponent<SimpleSwitch> ();
+			if (swt != null)
+			{
+				swt.ToggleSwitch ();
+				Debug.Log (name + " interacted.");
+			}
 		}
 	}
 
