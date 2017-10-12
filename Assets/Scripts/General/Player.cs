@@ -124,7 +124,6 @@ public class Player : Controller
 
 		if (Input.GetKeyDown (grapple))
 		{
-			Debug.Log (name + " is in " + getStateName ()); //DEBUG
 			hook.Launch ();
 		}
 	}
@@ -203,7 +202,6 @@ public class Player : Controller
 
 		if (keyRecorded (grapple, keys))
 		{
-			Debug.Log (name + " is in " + getStateName ()); //DEBUG
 			hook.Launch ();
 		}
 	}
