@@ -162,7 +162,7 @@ public class Timeline<T>
 	/// progress of the original should be kept.
 	/// </summary>
 	/// <param name="keepSim">Keep the simulation progress</param>
-	public Timeline<T> clone(bool keepSim)
+	public Timeline<T> clone(bool keepSim = false)
 	{
 		Timeline<T> clone = new Timeline<T> ();
 
