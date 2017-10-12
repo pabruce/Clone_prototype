@@ -177,7 +177,7 @@ public class Player : Controller
 		}
 
 		normal.update ();
-		KeyCode[] keys = readKeyPresses ();
+		KeyCode[] keys = readKeyPresses (true);
 
 		if (keys.Length > 0f) 
 		{
@@ -237,14 +237,21 @@ public class Player : Controller
 	}
 
 	// Read the keys currently pressed and add them to an array for recording
-	private KeyCode[] readKeyPresses()
+	private KeyCode[] readKeyPresses(bool keyDown = false)
 	{
 		List<KeyCode> keys = new List<KeyCode> ();
 		foreach (KeyCode key in Enum.GetValues(typeof(KeyCode)))
-			if (Input.GetKey (key)) 
+		{
+			if (Input.GetKey (key) && !keyDown)
 			{
 				keys.Add (key);
 			}
+			else if (Input.GetKeyDown (key))
+			{
+				keys.Add (key);
+			}
+		}
+
 		return keys.ToArray ();
 	}
 
